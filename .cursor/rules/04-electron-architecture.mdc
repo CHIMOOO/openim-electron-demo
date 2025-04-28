@@ -1,0 +1,47 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Electron架构
+
+## 主进程与渲染进程
+
+本项目遵循Electron的主进程/渲染进程架构：
+
+- [electron/main/](mdc:electron/main) - 主进程代码
+  - 负责原生功能如窗口管理、系统API访问
+  - 处理应用生命周期事件
+  
+- [electron/preload/](mdc:electron/preload) - 预加载脚本
+  - 在渲染进程脚本执行前运行
+  - 通过contextBridge安全地暴露API给渲染进程
+
+## 进程间通信（IPC）
+
+主进程和渲染进程之间通过IPC（进程间通信）进行消息传递：
+
+- 从渲染进程到主进程: `ipcRenderer.invoke()`/`ipcRenderer.send()`
+- 从主进程到渲染进程: `webContents.send()`
+
+通信应遵循以下原则：
+1. 清晰命名通道（channel）
+2. 验证输入数据
+3. 处理错误并返回有意义的错误消息
+
+## OpenIM SDK集成
+
+项目使用OpenIM SDK进行即时通讯功能实现：
+
+- [@openim/electron-client-sdk](mdc:node_modules/@openim/electron-client-sdk) - Electron环境下的OpenIM SDK
+- [@openim/wasm-client-sdk](mdc:node_modules/@openim/wasm-client-sdk) - WebAssembly版本的OpenIM SDK
+
+SDK相关配置和初始化应当在应用启动时完成。
+
+## 构建与打包
+
+项目使用electron-builder进行打包：
+
+- [electron-builder.json5](mdc:electron-builder.json5) - 定义Electron打包配置
+- [package.json](mdc:package.json) - 包含构建脚本和依赖
+

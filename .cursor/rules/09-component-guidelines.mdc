@@ -1,0 +1,99 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# React组件开发规范
+
+## 组件结构
+
+React组件应遵循以下结构：
+
+1. 导入依赖
+2. 定义类型
+3. 定义常量
+4. 组件定义
+5. 导出组件
+
+示例：
+
+```tsx
+// 1. 导入依赖
+import { FC, useState, useEffect } from 'react';
+import { Button } from 'antd';
+
+// 2. 定义类型
+interface UserProfileProps {
+  userId: string;
+  showDetails?: boolean;
+}
+
+// 3. 定义常量
+const DEFAULT_AVATAR = '/images/default-avatar.png';
+
+// 4. 组件定义
+const UserProfile: FC<UserProfileProps> = ({ userId, showDetails = false }) => {
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    // 获取用户数据的逻辑
+  }, [userId]);
+
+  return (
+    <div className="user-profile">
+      {/* 组件UI */}
+    </div>
+  );
+};
+
+// 5. 导出组件
+export default UserProfile;
+```
+
+## 组件分类
+
+### 1. 展示组件
+
+- 纯UI展示，无状态或仅使用内部状态
+- 通过props接收数据和回调
+- 尽量使用函数组件和React.memo()优化重渲染
+
+### 2. 容器组件
+
+- 包含业务逻辑和状态管理
+- 负责数据获取和处理
+- 将数据和回调传递给展示组件
+
+### 3. 布局组件
+
+- 处理页面布局和元素排列
+- 通常不包含业务逻辑
+- 位于[src/layout/](mdc:src/layout)目录
+
+## Hooks使用指南
+
+- 使用自定义Hook抽取可重用逻辑
+- Hook名称应以`use`开头
+- 保持Hook单一职责
+- 在[src/hooks/](mdc:src/hooks)目录中定义通用Hook
+
+## 状态管理
+
+- 组件内部状态使用`useState`/`useReducer`
+- 全局状态使用Zustand
+- 多组件共享状态优先考虑Context API
+- API数据获取和缓存使用React Query
+
+## 组件样式
+
+- 使用TailwindCSS实现样式
+- 复杂组件可以使用SCSS模块
+- 保持样式和组件在同一位置
+- 遵循响应式设计原则
+
+## 组件文档
+
+- 使用JSDoc风格注释组件和props
+- 记录重要的使用约束和注意事项
+- 对复杂交互逻辑添加注释
+

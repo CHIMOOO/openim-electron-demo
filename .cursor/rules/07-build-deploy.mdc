@@ -1,0 +1,71 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 构建与部署指南
+
+## Web应用构建
+
+本项目支持构建为纯Web应用：
+
+1. 运行构建命令：
+   ```bash
+   npm run build
+   ```
+
+2. 构建结果将位于`dist`目录，可部署到任何Web服务器
+
+## Electron应用构建
+
+### 准备工作
+
+1. 使用`package_electron.json`替换`package.json`文件，以减小最终包的大小：
+   ```bash
+   cp package_electron.json package.json
+   ```
+
+2. 安装依赖：
+   ```bash
+   npm install
+   ```
+
+### 构建步骤
+
+根据目标操作系统执行相应命令：
+
+```bash
+# Windows 64位
+npm run build:win
+
+# macOS Intel芯片
+npm run build:mac:x64
+
+# macOS Apple Silicon芯片
+npm run build:mac:arm64
+
+# Linux
+npm run build:linux
+```
+
+构建配置定义在[electron-builder.json5](mdc:electron-builder.json5)文件中。
+
+## 自动更新
+
+本项目支持使用`electron-updater`进行自动更新：
+
+1. 更新应用版本号（package.json中的version字段）
+2. 构建新版本
+3. 将构建产物上传到服务器或托管平台
+4. 应用将在启动时检查更新
+
+## 环境配置
+
+应用支持不同的环境配置：
+
+- 开发环境：`.env.development`
+- 生产环境：`.env.production`
+- 测试环境：`.env.test`
+
+环境变量通过`import.meta.env`在应用中访问。
+

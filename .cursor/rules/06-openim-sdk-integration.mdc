@@ -1,0 +1,79 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# OpenIM SDK集成指南
+
+## SDK初始化
+
+### Electron主进程初始化
+
+在Electron的主进程中，OpenIM SDK通过以下方式初始化：
+
+- [electron/utils/imsdk.ts](mdc:electron/utils/imsdk.ts) - 包含SDK初始化和配置
+- OpenIM库文件路径由`getLibSuffix()`函数根据不同操作系统和架构决定
+- 主进程通过`initIMSDK()`函数初始化SDK实例
+
+```typescript
+export const initIMSDK = (webContents: WebContents) =>
+  new OpenIMSDKMain(
+    path.join(global.pathConfig.imsdkLibPath, getLibSuffix()),
+    webContents,
+  );
+```
+
+### 渲染进程初始化
+
+渲染进程通过以下方式初始化和访问SDK：
+
+- [src/layout/MainContentWrap.tsx](mdc:src/layout/MainContentWrap.tsx) - 包含渲染进程SDK初始化
+- 使用`getWithRenderProcess`从`@openim/electron-client-sdk/lib/render`导入
+- 配置WebAssembly路径
+
+```typescript
+const { instance } = getWithRenderProcess({
+  wasmConfig: {
+    coreWasmPath: "./openIM.wasm",
+    sqlWasmPath: `/sql-wasm.wasm`,
+  },
+});
+const openIMSDK = instance;
+
+export const IMSDK = openIMSDK;
+```
+
+## 事件监听
+
+- 使用`CbEvents`枚举定义的各种回调事件
+- 在[src/layout/useGlobalEvents.tsx](mdc:src/layout/useGlobalEvents.tsx)中设置全局事件监听
+
+## 配置与服务器连接
+
+从README.zh-CN.md可知，需要通过环境变量设置服务器连接信息：
+
+```bash
+VITE_BASE_HOST=your-server-ip
+
+VITE_WS_URL=ws://$VITE_BASE_HOST:10001
+VITE_API_URL=http://$VITE_BASE_HOST:10002
+VITE_CHAT_URL=http://$VITE_BASE_HOST:10008
+```
+
+支持HTTPS连接：
+
+```bash
+VITE_BASE_DOMAIN=your-server-domain
+
+VITE_WS_URL=wss://$VITE_BASE_DOMAIN/msg_gateway
+VITE_API_URL=https://$VITE_BASE_DOMAIN/api
+VITE_CHAT_URL=https://$VITE_BASE_DOMAIN/chat
+```
+
+## 音视频通话
+
+OpenIM支持音视频通话功能：
+- 开源版支持一对一音视频通话
+- 需要先部署并配置[服务端](mdc:https:/github.com/openimsdk/chat/blob/main/HOW_TO_SETUP_LIVEKIT_SERVER.md)
+- 使用LiveKit进行实时通信
+

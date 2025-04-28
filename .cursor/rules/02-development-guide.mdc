@@ -1,0 +1,59 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 开发指南
+
+## 开发环境设置
+1. 安装依赖：
+   ```bash
+   npm install
+   ```
+   或者：
+   ```bash
+   pnpm install
+   ```
+
+2. 启动开发服务器：
+   ```bash
+   npm run dev
+   ```
+   
+   这将使用Vite启动开发服务器，并允许远程访问（--host参数）。
+
+## 项目构建
+构建项目：
+```bash
+npm run build
+```
+
+## 代码规范
+
+本项目使用ESLint和Prettier进行代码格式化和规范化：
+
+- [.eslintrc.js](mdc:.eslintrc.js) - ESLint配置
+- [.prettierrc.json](mdc:.prettierrc.json) - Prettier配置
+
+使用以下命令进行代码格式化和检查：
+```bash
+# 格式化代码
+npm run format
+
+# 检查代码规范
+npm run lint
+
+# 修复代码规范问题
+npm run lint:fix
+```
+
+项目使用Husky和lint-staged在提交代码前自动进行代码格式化和规范检查。
+
+## 国际化
+
+本项目使用i18next进行国际化。翻译文件位于：
+- 前端: [src/i18n/](mdc:src/i18n)
+- Electron: [electron/i18n/](mdc:electron/i18n)
+
+添加新的翻译内容时，需要在相应的语言文件中添加对应的翻译键值对。
+

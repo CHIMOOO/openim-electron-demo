@@ -1,0 +1,82 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Git工作流规范
+
+## 分支管理
+
+本项目采用以下分支策略：
+
+- `main` - 主分支，包含稳定可发布的代码
+- `develop` - 开发分支，包含最新开发特性
+- `feature/*` - 功能分支，用于开发新特性
+- `bugfix/*` - 修复分支，用于修复bug
+- `release/*` - 发布分支，用于准备新版本发布
+
+## 提交规范
+
+本项目使用[Conventional Commits](mdc:https:/www.conventionalcommits.org)规范，配置在[commitlint.config.js](mdc:commitlint.config.js)文件中：
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+### 提交类型
+
+- `feat`: 新功能
+- `fix`: 修复bug
+- `docs`: 文档更新
+- `style`: 代码风格修改（不影响代码运行的变动）
+- `refactor`: 代码重构（不包括bug修复和功能新增）
+- `perf`: 性能优化
+- `test`: 测试相关
+- `build`: 构建系统或外部依赖项的更改
+- `ci`: CI配置文件和脚本的更改
+- `chore`: 其他不修改源代码或测试文件的更改
+- `revert`: 撤销之前的提交
+
+### 示例
+
+```
+feat(chat): 添加消息撤回功能
+
+- 实现单聊和群聊消息撤回
+- 添加撤回时间限制（2分钟内可撤回）
+
+BREAKING CHANGE: 消息类型增加了'revoked'状态
+```
+
+## 代码审查
+
+所有合并到`develop`和`main`分支的代码都应当通过代码审查：
+
+1. 创建Pull Request（PR）
+2. 至少一名团队成员审查通过
+3. 通过自动化测试和构建
+4. 合并到目标分支
+
+## Husky钩子
+
+项目使用Husky在Git操作时执行自动化任务：
+
+- `pre-commit`: 在提交前运行lint-staged进行代码格式化和规范检查
+- `commit-msg`: 检查提交信息是否符合Conventional Commits规范
+
+## 版本管理
+
+版本号遵循[语义化版本控制](mdc:https:/semver.org)规范：
+
+```
+主版本号.次版本号.修订号
+```
+
+- 主版本号：当进行不兼容的API更改时
+- 次版本号：当以向后兼容的方式添加功能时
+- 修订号：当进行向后兼容的bug修复时
+
