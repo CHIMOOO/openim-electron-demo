@@ -1,16 +1,19 @@
 import { useLatest } from "ahooks";
 import { Button } from "antd";
 import { t } from "i18next";
-import { forwardRef, ForwardRefRenderFunction, memo, useState } from "react";
+import { forwardRef, ForwardRefRenderFunction, memo, useRef, useState } from "react";
 
 import CKEditor from "@/components/CKEditor";
 import { getCleanText } from "@/components/CKEditor/utils";
+import QuickPhrases from "@/components/QuickPhrases";
+import { useQuickPhrases } from "@/hooks/useQuickPhrases";
 import i18n from "@/i18n";
 import { IMSDK } from "@/layout/MainContentWrap";
 
 import SendActionBar from "./SendActionBar";
 import { useFileMessage } from "./SendActionBar/useFileMessage";
 import { useSendMessage } from "./useSendMessage";
+import "./index.scss";
 
 const sendActions = [
   { label: t("placeholder.sendWithEnter"), key: "enter" },
@@ -25,12 +28,48 @@ i18n.on("languageChanged", () => {
 const ChatFooter: ForwardRefRenderFunction<unknown, unknown> = (_, ref) => {
   const [html, setHtml] = useState("");
   const latestHtml = useLatest(html);
+  const editorWrapperRef = useRef<HTMLDivElement>(null);
+  const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
 
   const { getImageMessage } = useFileMessage();
   const { sendMessage } = useSendMessage();
+  const { visible, phrases, loading, openQuickPhrases, closeQuickPhrases } =
+    useQuickPhrases();
 
   const onChange = (value: string) => {
     setHtml(value);
+  };
+
+  const handleQuickPhraseSelect = (content: string) => {
+    setHtml(html + content);
+  };
+
+  const handleSlashInput = (position: { top: number; left: number }) => {
+    // 获取编辑器容器的位置信息
+    const editorRect = editorWrapperRef.current?.getBoundingClientRect();
+
+    if (editorRect) {
+      // 将绝对位置转换为相对于编辑器容器的位置
+      // 注意：光标位置是相对于窗口的，需要减去编辑器容器相对于窗口的位置
+      const relativeTop = position.top - editorRect.top;
+      const relativeLeft = position.left - editorRect.left;
+
+      // 添加一些偏移量，使下拉框位置更合适
+      const offsetTop = -10; // 在光标上方10px
+
+      setCursorPosition({
+        top: Math.max(0, relativeTop + offsetTop),
+        left: Math.max(10, relativeLeft), // 确保至少有10px的左边距
+      });
+
+      console.log("光标位置:", {
+        window: position,
+        relative: { top: relativeTop, left: relativeLeft },
+        final: { top: relativeTop + offsetTop, left: relativeLeft },
+      });
+    }
+
+    openQuickPhrases();
   };
 
   const enterToSend = async () => {
@@ -46,8 +85,31 @@ const ChatFooter: ForwardRefRenderFunction<unknown, unknown> = (_, ref) => {
     <footer className="relative h-full bg-white py-px">
       <div className="flex h-full flex-col border-t border-t-[var(--gap-text)]">
         <SendActionBar sendMessage={sendMessage} getImageMessage={getImageMessage} />
-        <div className="relative flex flex-1 flex-col overflow-hidden">
-          <CKEditor value={html} onEnter={enterToSend} onChange={onChange} />
+        <div
+          className="relative flex flex-1 flex-col overflow-hidden"
+          ref={editorWrapperRef}
+        >
+          <CKEditor
+            value={html}
+            onEnter={enterToSend}
+            onChange={onChange}
+            onSlashInput={handleSlashInput}
+          />
+          <div
+            className="quick-phrases-container"
+            style={{
+              top: cursorPosition.top,
+              left: cursorPosition.left,
+            }}
+          >
+            <QuickPhrases
+              visible={visible}
+              phrases={phrases}
+              loading={loading}
+              onSelect={handleQuickPhraseSelect}
+              onClose={closeQuickPhrases}
+            />
+          </div>
           <div className="flex items-center justify-end py-2 pr-3">
             <Button className="w-fit px-6 py-1" type="primary" onClick={enterToSend}>
               {t("placeholder.send")}

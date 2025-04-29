@@ -308,5 +308,12 @@ declare namespace API {
       status?: number;
       type?: number;
     };
+
+    type CommonPhrasesResponse = {
+      data: Array<{
+        id: number;
+        content: string;
+      }>;
+    };
   }
 }

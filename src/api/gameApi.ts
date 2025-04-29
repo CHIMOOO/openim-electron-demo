@@ -550,7 +550,7 @@ export const useOffline = () => {
 export const useGetCommonPhrases = () => {
   return useMutation(
     () =>
-      noCheckRequest.post(
+      noCheckRequest.post<API.Game.CommonPhrasesResponse>(
         "/api/im_chat/get_common_phrases",
         {},
         {
