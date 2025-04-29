@@ -15,7 +15,7 @@
   "i18n-swapper.decorationStyle": "inline",
   "i18n-swapper.defaultLocale": "zh-CN",
   "i18n-swapper.functionName": "t",
-  "i18n-swapper.localesPaths": [],
+  "i18n-swapper.localesPaths": ["src/i18n/resources/zh.json"],
   "i18n-swapper.quoteType": "single",
   "i18n-swapper.scanPatterns": [
     "label",
@@ -44,7 +44,12 @@
   "i18n-swapper.tencentTranslation.apiSecret": "",
   "i18n-swapper.tencentTranslation.region": "ap-guangzhou",
   "i18n-swapper.tencentTranslation.sourceLanguage": "zh",
-  "i18n-swapper.tencentTranslation.languageMappings": [],
+  "i18n-swapper.tencentTranslation.languageMappings": [
+    {
+      "languageCode": "zh",
+      "filePath": "src/i18n/resources/zh.json"
+    }
+  ],
   "i18n-swapper.autoGenerateKeyFromText": true,
   "i18n-swapper.autoGenerateKeyPrefix": "_iw",
   "i18n-swapper.autoTranslateAllLanguages": true,
@@ -61,5 +66,6 @@
     ".history"
   ],
   "i18n-swapper.includeFiles": [],
-  "i18n-swapper.SkipPrompt": []
+  "i18n-swapper.SkipPrompt": [],
+  "i18n-ally.localesPaths": ["electron/i18n", "src/i18n"]
 }

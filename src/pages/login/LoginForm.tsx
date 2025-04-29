@@ -1,10 +1,11 @@
-import { Button, Form, Input, QRCode, Select, Space, Tabs } from "antd";
+import { Button, Form, Input, QRCode, Select, Space, Tabs, message } from "antd";
 import { t } from "i18next";
 import md5 from "md5";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useLogin, useSendSms } from "@/api/login";
+import { GameApi } from "@/api";
 import {
   getEmail,
   getPhoneNumber,
@@ -35,7 +36,9 @@ const LoginForm = ({ loginMethod, setFormType, updateLoginMethod }: LoginFormPro
   const [form] = Form.useForm();
   const [loginType, setLoginType] = useState<LoginType>(LoginType.Password);
   const { mutate: login, isLoading: loginLoading } = useLogin();
+  const { mutate: webLogin, isLoading: webLoginLoading } = GameApi.useWebLogin();
   const { mutate: semdSms } = useSendSms();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [countdown, setCountdown] = useState(0);
   useEffect(() => {
@@ -53,6 +56,7 @@ const LoginForm = ({ loginMethod, setFormType, updateLoginMethod }: LoginFormPro
   }, [countdown]);
 
   const onFinish = (params: API.Login.LoginParams) => {
+    setIsSubmitting(true);
     if (loginType === 0) {
       params.password = md5(params.password ?? "");
     }
@@ -67,7 +71,34 @@ const LoginForm = ({ loginMethod, setFormType, updateLoginMethod }: LoginFormPro
       onSuccess: (data) => {
         const { chatToken, imToken, userID } = data.data;
         setIMProfile({ chatToken, imToken, userID });
-        navigate("/chat");
+
+        // 调用Web登录接口
+        webLogin(
+          {
+            type: 1, // 窗口登录
+            username: params.phoneNumber || params.email || "",
+            password: params.password || "",
+            platform: 5, // web平台
+          },
+          {
+            onSuccess: (webData) => {
+              // 保存Web登录令牌
+              if (webData.data && typeof webData.data.token === "string") {
+                localStorage.setItem("token", webData.data.token as string);
+              }
+              // 两个接口都成功后导航到聊天页面
+              setIsSubmitting(false);
+              navigate("/chat");
+            },
+            onError: () => {
+              message.error("接入坐席失败");
+              setIsSubmitting(false);
+            },
+          },
+        );
+      },
+      onError: () => {
+        setIsSubmitting(false);
       },
     });
   };
@@ -192,7 +223,12 @@ const LoginForm = ({ loginMethod, setFormType, updateLoginMethod }: LoginFormPro
         </div>
 
         <Form.Item className="mb-4">
-          <Button type="primary" htmlType="submit" block loading={loginLoading}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+            loading={isSubmitting || loginLoading || webLoginLoading}
+          >
             {t("placeholder.login")}
           </Button>
         </Form.Item>
