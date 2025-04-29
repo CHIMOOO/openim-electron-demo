@@ -1,0 +1,42 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# API配置和开发环境设置
+
+## API配置
+项目使用环境变量来配置API端点。主要的API端点是聊天服务器URL，通过`VITE_CHAT_URL`环境变量配置。
+
+## 开发环境配置
+1. 在项目根目录创建`.env`或`.env.local`文件添加以下配置：
+```
+VITE_BASE_HOST=your-server-ip
+VITE_BASE_DOMAIN=your-domain
+VITE_CHAT_URL=http://$VITE_BASE_HOST:10008
+```
+
+2. 对于生产环境，可以配置为：
+```
+VITE_CHAT_URL=https://$VITE_BASE_DOMAIN/chat
+```
+
+## API调用实现
+API请求主要在以下文件中实现：
+- [src/api/login.ts](mdc:src/api/login.ts) - 包含登录、注册、发送验证码等功能
+- [src/api/imApi.ts](mdc:src/api/imApi.ts) - 即时通讯相关API
+
+## 修改API端点
+如果需要修改API端点进行开发调试：
+1. 创建或修改根目录下的`.env.local`文件
+2. 设置`VITE_CHAT_URL`指向你的开发服务器
+3. 重启开发环境: `npm run dev`
+
+## 请求工具
+项目使用Axios进行HTTP请求，封装在[src/utils/request.ts](mdc:src/utils/request.ts)中。
+
+## 常见API调用示例
+- 登录: `useLogin()`
+- 注册: `useRegister()`
+- 获取用户信息: `getBusinessUserInfo()`
+

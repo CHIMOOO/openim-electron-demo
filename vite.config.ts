@@ -15,6 +15,7 @@ export default defineConfig(({ command }) => {
   rmSync("dist-electron", { recursive: true, force: true });
 
   const sourcemap = command === "serve" || !!process.env.VSCODE_DEBUG;
+  const isWebOnly = process.env.VITE_WEB_ONLY === 'true';
 
   return {
     resolve: {
@@ -31,26 +32,28 @@ export default defineConfig(({ command }) => {
     },
     plugins: [
       react(),
-      electron({
-        include: ["electron"],
-        transformOptions: {
-          sourcemap,
-        },
-        plugins: [
-          ...(!!process.env.VSCODE_DEBUG
-            ? [
-              // Will start Electron via VSCode Debug
-              customStart(() =>
-                console.log(
-                    /* For `.vscode/.debug.script.mjs` */ "[startup] Electron App",
+      ...(!isWebOnly ? [
+        electron({
+          include: ["electron"],
+          transformOptions: {
+            sourcemap,
+          },
+          plugins: [
+            ...(!!process.env.VSCODE_DEBUG
+              ? [
+                // Will start Electron via VSCode Debug
+                customStart(() =>
+                  console.log(
+                      /* For `.vscode/.debug.script.mjs` */ "[startup] Electron App",
+                  ),
                 ),
-              ),
-            ]
-            : []),
-          // Allow use `import.meta.env.VITE_SOME_KEY` in Electron-Main
-          loadViteEnv(),
-        ],
-      }),
+              ]
+              : []),
+            // Allow use `import.meta.env.VITE_SOME_KEY` in Electron-Main
+            loadViteEnv(),
+          ],
+        })
+      ] : []),
       // legacy({
       //   targets: ["defaults", "not IE 11"],
       // }),

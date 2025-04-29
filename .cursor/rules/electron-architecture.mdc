@@ -1,0 +1,45 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Electron应用架构
+
+## 基本架构
+这个项目是一个使用Electron框架的桌面应用，主要包含三个部分：
+1. 主进程(Main Process)：[electron/main/](mdc:electron/main)
+2. 渲染进程(Renderer Process)：整个`src/`目录
+3. 预加载脚本(Preload)：[electron/preload/](mdc:electron/preload)
+
+## 主进程
+主进程是Electron应用的入口点，负责创建窗口、处理系统级别事件和与操作系统交互：
+- 入口文件：`electron/main/index.ts`
+- 窗口管理
+- 菜单配置
+- 系统托盘
+- 进程间通信(IPC)
+- 应用程序更新
+
+## 渲染进程
+渲染进程是应用的用户界面部分，使用React构建：
+- 入口文件：`src/main.tsx`
+- 界面组件和页面
+- 状态管理
+- API请求
+
+## 预加载脚本
+预加载脚本在渲染进程加载前执行，用于安全地暴露主进程功能给渲染进程：
+- 入口文件：`electron/preload/index.ts`
+- 定义了`window.electronAPI`接口，使渲染进程可以安全调用主进程功能
+
+## 进程间通信(IPC)
+主进程和渲染进程之间通过IPC进行通信：
+- 主进程通过`ipcMain`监听渲染进程的请求
+- 渲染进程通过`ipcRenderer`(通过预加载脚本暴露)向主进程发送请求
+- 预加载脚本定义了安全的通信接口
+
+## 打包和构建
+应用使用`electron-builder`进行打包：
+- 配置文件：[electron-builder.json5](mdc:electron-builder.json5)
+- 生成可分发的安装包
+

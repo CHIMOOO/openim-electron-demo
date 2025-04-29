@@ -1,0 +1,45 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# OpenIM Electron客户端项目架构
+
+## 项目概述
+这是OpenIM的Electron客户端演示项目，使用React、TypeScript和Electron构建。该应用程序是一个即时通讯客户端，基于OpenIM SDK。
+
+## 目录结构
+- `src/` - 前端React应用源代码
+  - `api/` - 后端API接口调用
+  - `assets/` - 静态资源文件
+  - `components/` - 可复用组件
+  - `config/` - 配置文件
+  - `constants/` - 常量定义
+  - `hooks/` - 自定义React hooks
+  - `i18n/` - 国际化配置
+  - `layout/` - 布局组件
+  - `pages/` - 页面组件
+  - `routes/` - 路由配置
+  - `store/` - 状态管理(Zustand)
+  - `styles/` - 样式文件
+  - `types/` - TypeScript类型定义
+  - `utils/` - 工具函数
+
+- `electron/` - Electron相关代码
+  - `main/` - 主进程代码
+  - `preload/` - 预加载脚本
+  - `utils/` - 工具函数
+  - `constants/` - 常量定义
+  - `i18n/` - 国际化配置
+
+## 主要技术栈
+- React 18
+- TypeScript
+- Electron
+- Vite
+- Zustand (状态管理)
+- React Query (API调用)
+- Antd (UI组件库)
+- TailwindCSS (样式)
+- OpenIM SDK (即时通讯SDK)
+
