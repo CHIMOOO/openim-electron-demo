@@ -59,7 +59,7 @@ const ChatFooter: ForwardRefRenderFunction<unknown, unknown> = (_, ref) => {
 
       setCursorPosition({
         top: Math.max(0, relativeTop + offsetTop),
-        left: Math.max(10, relativeLeft), // 确保至少有10px的左边距
+        left: relativeLeft, // 与光标左侧对齐，不再使用额外的左边距
       });
 
       console.log("光标位置:", {

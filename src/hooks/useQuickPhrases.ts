@@ -27,7 +27,11 @@ export const useQuickPhrases = () => {
     setLoading(true);
     try {
       const response = await getCommonPhrases.mutateAsync();
-      setPhrases(response.data.data || []);
+      // setPhrases(response.data.data || []);
+      setPhrases([
+        { id: 1, content: "你好" },
+        { id: 2, content: "今天天气不错" },
+      ]);
     } catch (error) {
       console.error("获取快捷短语失败", error);
     } finally {
