@@ -19,7 +19,7 @@ const noCheckRequest = createAxiosInstance(baseURL, false, false);
 export const useRegister = () => {
   return useMutation(
     (params: API.Game.RegisterParams) =>
-      request.post<{ token: string }>("/api/user/register", params, {
+      noCheckRequest.post<{ token: string }>("/api/user/register", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -34,7 +34,7 @@ export const useRegister = () => {
 export const useLogin = () => {
   return useMutation(
     (params: API.Game.LoginParams) =>
-      request.post<{ token: string }>("/api/login", params, {
+      noCheckRequest.post<{ token: string }>("/api/login", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -49,7 +49,7 @@ export const useLogin = () => {
 export const useLogout = () => {
   return useMutation(
     (params: API.Game.LogoutParams) =>
-      request.post("/api/user/logout", params, {
+      noCheckRequest.post("/api/user/logout", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -64,7 +64,7 @@ export const useLogout = () => {
 export const useSendSms = () => {
   return useMutation(
     (params: API.Game.SendSmsParams) =>
-      request.post("/api/send_sms", params, {
+      noCheckRequest.post("/api/send_sms", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -79,7 +79,7 @@ export const useSendSms = () => {
 export const useUserInfoSet = () => {
   return useMutation(
     (params: API.Game.UserInfoSetParams) =>
-      request.post("/api/user/user_info_set", params, {
+      noCheckRequest.post("/api/user/user_info_set", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -95,7 +95,7 @@ export const useUserInfoSet = () => {
 export const useGetUserInfo = () => {
   return useMutation(
     () =>
-      request.post(
+      noCheckRequest.post(
         "/api/user/info",
         {},
         {
@@ -115,7 +115,7 @@ export const useGetUserInfo = () => {
 export const useGetBalance = () => {
   return useMutation(
     () =>
-      request.post<API.Game.BalanceResponse>(
+      noCheckRequest.post<API.Game.BalanceResponse>(
         "/api/user/balance",
         {},
         {
@@ -135,7 +135,7 @@ export const useGetBalance = () => {
 export const useGetRealNameList = () => {
   return useMutation(
     () =>
-      request.post(
+      noCheckRequest.post(
         "/api/user/realname_list",
         {},
         {
@@ -155,7 +155,7 @@ export const useGetRealNameList = () => {
 export const useGetTransactionList = () => {
   return useMutation(
     (params: API.Game.TransactionParams) =>
-      request.post("/api/user/transaction", params, {
+      noCheckRequest.post("/api/user/transaction", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -171,7 +171,7 @@ export const useGetTransactionList = () => {
 export const useWithdrawal = () => {
   return useMutation(
     (params: API.Game.WithdrawalParams) =>
-      request.post("/api/user/user_withdrawal", params, {
+      noCheckRequest.post("/api/user/user_withdrawal", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -187,7 +187,7 @@ export const useWithdrawal = () => {
 export const useGetGoodsList = () => {
   return useMutation(
     () =>
-      request.post(
+      noCheckRequest.post(
         "/api/goods/goods_list",
         {},
         {
@@ -207,7 +207,7 @@ export const useGetGoodsList = () => {
 export const useUpdateGoods = () => {
   return useMutation(
     (params: API.Game.UpdateGoodsParams) =>
-      request.post("/api/goods/goods_update", params, {
+      noCheckRequest.post("/api/goods/goods_update", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -223,7 +223,7 @@ export const useUpdateGoods = () => {
 export const useEditGoods = () => {
   return useMutation(
     (params: API.Game.EditGoodsParams) =>
-      request.post("/api/goods/goods_edit", params, {
+      noCheckRequest.post("/api/goods/goods_edit", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -239,7 +239,7 @@ export const useEditGoods = () => {
 export const useGetGoodsDetails = () => {
   return useMutation(
     (params: API.Game.GoodsDetailsParams) =>
-      request.post("/api/goods/goods_details", params, {
+      noCheckRequest.post("/api/goods/goods_details", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -255,7 +255,7 @@ export const useGetGoodsDetails = () => {
 export const useGetGameType = () => {
   return useMutation(
     () =>
-      request.post(
+      noCheckRequest.post(
         "/api/game/game_type",
         {},
         {
@@ -274,7 +274,7 @@ export const useGetGameType = () => {
 export const useGetBannerImages = () => {
   return useMutation(
     () =>
-      request.post<API.Game.BannerResponse>(
+      noCheckRequest.post<API.Game.BannerResponse>(
         "/api/images/get_banner_img",
         {},
         {
@@ -293,7 +293,7 @@ export const useGetBannerImages = () => {
 export const useGetPosterImage = () => {
   return useMutation(
     () =>
-      request.post<API.Game.PosterResponse>(
+      noCheckRequest.post<API.Game.PosterResponse>(
         "/api/images/get_poster_img",
         {},
         {
@@ -312,7 +312,7 @@ export const useGetPosterImage = () => {
 export const useGetWantBuyImage = () => {
   return useMutation(
     () =>
-      request.post<API.Game.WantBuyResponse>(
+      noCheckRequest.post<API.Game.WantBuyResponse>(
         "/api/images/my_want_buy_img",
         {},
         {
@@ -331,7 +331,7 @@ export const useGetWantBuyImage = () => {
 export const useAssignCustomerService = () => {
   return useMutation(
     (params: API.Game.AssignCustomerServiceParams) =>
-      request.post("/api/im_chat/assign_customer_service", params, {
+      noCheckRequest.post("/api/im_chat/assign_customer_service", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -346,7 +346,7 @@ export const useAssignCustomerService = () => {
 export const useSendMessage = () => {
   return useMutation(
     (params: API.Game.SendMessageParams) =>
-      request.post("/api/im_chat/send_msg", params, {
+      noCheckRequest.post("/api/im_chat/send_msg", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -362,7 +362,7 @@ export const useSendMessage = () => {
 export const useCreateChatGroup = () => {
   return useMutation(
     (params: API.Game.CreateChatGroupParams) =>
-      request.post("/api/im_chat/create_chat_group", params, {
+      noCheckRequest.post("/api/im_chat/create_chat_group", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -377,7 +377,7 @@ export const useCreateChatGroup = () => {
 export const useGetGameList = () => {
   return useMutation(
     () =>
-      request.post(
+      noCheckRequest.post(
         "/api/main/index",
         {},
         {
@@ -396,7 +396,7 @@ export const useGetGameList = () => {
 export const useGetGameGoodsList = () => {
   return useMutation(
     (params?: API.Game.GameGoodsListParams) =>
-      request.post("/api/game_goods_list", params || {}, {
+      noCheckRequest.post("/api/game_goods_list", params || {}, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -412,7 +412,7 @@ export const useGetGameGoodsList = () => {
 export const useGetGoodsSettingList = () => {
   return useMutation(
     () =>
-      request.post(
+      noCheckRequest.post(
         "/api/goods/goods_setting_list",
         {},
         {
@@ -431,7 +431,7 @@ export const useGetGoodsSettingList = () => {
 export const useUpdateGoodsDetails = () => {
   return useMutation(
     (params: API.Game.UpdateGoodsDetailsParams) =>
-      request.post("/api/goods/goods_details_update", params, {
+      noCheckRequest.post("/api/goods/goods_details_update", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -447,7 +447,7 @@ export const useUpdateGoodsDetails = () => {
 export const useGetDeviceService = () => {
   return useMutation(
     () =>
-      request.post(
+      noCheckRequest.post(
         "/api/game/device_service",
         {},
         {
@@ -466,7 +466,7 @@ export const useGetDeviceService = () => {
 export const useGetGamePattern = () => {
   return useMutation(
     (params: API.Game.GamePatternParams) =>
-      request.post("/api/game/game_pattern", params, {
+      noCheckRequest.post("/api/game/game_pattern", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -481,7 +481,7 @@ export const useGetGamePattern = () => {
 export const useGetPatternList = () => {
   return useMutation(
     () =>
-      request.post(
+      noCheckRequest.post(
         "/api/main/pattern",
         {},
         {
@@ -500,7 +500,7 @@ export const useGetPatternList = () => {
 export const useGetCategoryList = () => {
   return useMutation(
     () =>
-      request.post(
+      noCheckRequest.post(
         "/api/main/category",
         {},
         {
@@ -519,7 +519,7 @@ export const useGetCategoryList = () => {
 export const useGetSpecificGoodsList = () => {
   return useMutation(
     (params: API.Game.SpecificGoodsListParams) =>
-      request.post("/api/main/goods_list", params, {
+      noCheckRequest.post("/api/main/goods_list", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -534,7 +534,7 @@ export const useGetSpecificGoodsList = () => {
 export const useOffline = () => {
   return useMutation(
     (params: API.Game.OfflineParams) =>
-      request.post("/api/im_chat/offine", params, {
+      noCheckRequest.post("/api/im_chat/offine", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -550,7 +550,7 @@ export const useOffline = () => {
 export const useGetCommonPhrases = () => {
   return useMutation(
     () =>
-      request.post(
+      noCheckRequest.post(
         "/api/im_chat/get_common_phrases",
         {},
         {
@@ -570,7 +570,7 @@ export const useGetCommonPhrases = () => {
 export const useSendCustomizeMsg = () => {
   return useMutation(
     (params: API.Game.SendCustomizeMsgParams) =>
-      request.post("/api/im_chat/send_customize_msg", params, {
+      noCheckRequest.post("/api/im_chat/send_customize_msg", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -585,7 +585,7 @@ export const useSendCustomizeMsg = () => {
 export const useSendBusinessNotification = () => {
   return useMutation(
     (params: API.Game.SendBusinessNotificationParams) =>
-      request.post("/api/im_chat/send_business_notification", params, {
+      noCheckRequest.post("/api/im_chat/send_business_notification", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -601,7 +601,7 @@ export const useSendBusinessNotification = () => {
 export const useCreateGroup = () => {
   return useMutation(
     (params: API.Game.CreateGroupParams) =>
-      request.post("/api/im/create_group", params, {
+      noCheckRequest.post("/api/im/create_group", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -616,7 +616,7 @@ export const useCreateGroup = () => {
 export const useKickGroupUser = () => {
   return useMutation(
     (params: API.Game.KickGroupUserParams) =>
-      request.post("/api/im_group/kick_group_user", params, {
+      noCheckRequest.post("/api/im_group/kick_group_user", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -631,7 +631,7 @@ export const useKickGroupUser = () => {
 export const useMuteGroup = () => {
   return useMutation(
     (params: API.Game.MuteGroupParams) =>
-      request.post("/api/im_group/mute_group", params, {
+      noCheckRequest.post("/api/im_group/mute_group", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -646,7 +646,7 @@ export const useMuteGroup = () => {
 export const useGetGroupInfo = () => {
   return useMutation(
     (params: API.Game.GroupInfoParams) =>
-      request.post("/api/im_group/get_groupinfo_by_imgroupid", params, {
+      noCheckRequest.post("/api/im_group/get_groupinfo_by_imgroupid", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -662,7 +662,7 @@ export const useGetGroupInfo = () => {
 export const useImLogin = () => {
   return useMutation(
     (params: API.Game.ImLoginParams) =>
-      request.post("/api/im_chat/im_login", params, {
+      noCheckRequest.post("/api/im_chat/im_login", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -677,7 +677,7 @@ export const useImLogin = () => {
 export const useChangePassword = () => {
   return useMutation(
     (params: API.Game.ChangePasswordParams) =>
-      request.post("/api/change_password", params, {
+      noCheckRequest.post("/api/change_password", params, {
         headers: {
           operationID: uuidv4(),
         },
@@ -707,7 +707,7 @@ export const useWebLogin = () => {
 export const useSaveOrder = () => {
   return useMutation(
     (params: API.Game.SaveOrderParams) =>
-      request.post("/api/order/save", params, {
+      noCheckRequest.post("/api/order/save", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -723,7 +723,7 @@ export const useSaveOrder = () => {
 export const useGetReparation = () => {
   return useMutation(
     () =>
-      request.post(
+      noCheckRequest.post(
         "/api/order/reparation",
         {},
         {
@@ -743,7 +743,7 @@ export const useGetReparation = () => {
 export const useOrderPlay = () => {
   return useMutation(
     (params: API.Game.OrderPlayParams) =>
-      request.post("/api/order/order_play", params, {
+      noCheckRequest.post("/api/order/order_play", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -759,7 +759,7 @@ export const useOrderPlay = () => {
 export const useSetOrderStatus = () => {
   return useMutation(
     (params: API.Game.SetOrderStatusParams) =>
-      request.post("/api/order/order_status_set", params, {
+      noCheckRequest.post("/api/order/order_status_set", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
@@ -775,7 +775,7 @@ export const useSetOrderStatus = () => {
 export const useGetOrderList = () => {
   return useMutation(
     (params: API.Game.OrderListParams) =>
-      request.post("/api/order/order_list", params, {
+      noCheckRequest.post("/api/order/order_list", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),
