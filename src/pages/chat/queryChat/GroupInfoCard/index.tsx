@@ -1,7 +1,7 @@
-import { CopyOutlined, UserOutlined } from "@ant-design/icons";
+import { CopyOutlined, ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import { AllowType } from "@openim/wasm-client-sdk";
-import { Avatar, Button, Divider, Skeleton, Tooltip } from "antd";
-import { FC, memo } from "react";
+import { Avatar, Button, Divider, Image, Skeleton, Tag, Tooltip, message } from "antd";
+import { FC, memo, useState } from "react";
 import { useCopyToClipboard } from "react-use";
 
 import OIMAvatar from "@/components/OIMAvatar";
@@ -10,6 +10,7 @@ import { useConversationStore } from "@/store";
 import { feedbackToast } from "@/utils/common";
 
 import { useGroupInfoApi } from "./useGroupInfoApi";
+import { useProductAndOrderApi } from "./useProductAndOrderApi";
 
 interface GroupInfoCardProps {
   onViewDetails?: () => void;
@@ -21,6 +22,17 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({ onViewDetails }) => {
     (state) => state.currentMemberInGroup,
   );
   const { groupApiInfo, loading, error, refetch } = useGroupInfoApi();
+  const {
+    productData,
+    loadingProduct,
+    productError,
+    orderResult,
+    loadingOrder,
+    placeOrder,
+    fetchProductDetails,
+  } = useProductAndOrderApi();
+
+  const [orderId, setOrderId] = useState<string>("");
   const { isOwner, isAdmin } = useCurrentMemberRole();
   const [_, copyToClipboard] = useCopyToClipboard();
 
@@ -33,6 +45,15 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({ onViewDetails }) => {
   const copyGroupId = () => {
     copyToClipboard(currentGroupInfo.groupID);
     feedbackToast({ msg: "复制成功" });
+  };
+
+  const handlePlaceOrder = () => {
+    if (!orderId) {
+      message.warning("请输入订单ID");
+      return;
+    }
+
+    placeOrder(orderId);
   };
 
   const memberCount = currentGroupInfo.memberCount || 0;
@@ -144,6 +165,100 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({ onViewDetails }) => {
               <Button type="link" size="small" onClick={refetch}>
                 重试
               </Button>
+            </div>
+          )}
+
+          {/* 商品详情部分 */}
+          <div className="mb-2">
+            <div className="flex flex-col">
+              <span className="mb-1 text-sm font-medium text-gray-600">商品详情</span>
+              <div className="rounded-md bg-gray-50 p-2">
+                {loadingProduct ? (
+                  <Skeleton active paragraph={{ rows: 2 }} />
+                ) : productError ? (
+                  <div className="rounded bg-red-50 p-2 text-xs text-red-500">
+                    {productError}
+                    <Button
+                      type="link"
+                      size="small"
+                      onClick={() => {
+                        if (apiGroup?.good_id) {
+                          fetchProductDetails(String(apiGroup.good_id));
+                        }
+                      }}
+                    >
+                      重试
+                    </Button>
+                  </div>
+                ) : productData ? (
+                  <div className="space-y-2">
+                    {productData.title && (
+                      <div className="font-medium">
+                        {productData.title}
+                        {productData.is_play === 1 && (
+                          <Tag className="ml-2" color="green">
+                            可购买
+                          </Tag>
+                        )}
+                      </div>
+                    )}
+
+                    {productData.retail_price && (
+                      <div className="font-bold text-red-600">
+                        价格: ￥{productData.retail_price.toFixed(2)}
+                      </div>
+                    )}
+
+                    {productData.label && (
+                      <div className="flex flex-wrap gap-1">
+                        {productData.label.split(",").map((tag, index) => (
+                          <Tag key={index} color="blue">
+                            {tag}
+                          </Tag>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-xs text-gray-500">暂无商品信息</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* 订单操作部分 */}
+          {productData?.is_play === 1 && !productData.is_self && (
+            <div className="mt-3 border-t border-gray-100 pt-3">
+              <div className="flex flex-col gap-2">
+                <input
+                  type="text"
+                  value={orderId}
+                  onChange={(e) => setOrderId(e.target.value)}
+                  placeholder="输入订单ID"
+                  className="rounded border border-gray-300 px-3 py-2 text-sm"
+                />
+                <Button
+                  type="primary"
+                  icon={<ShoppingCartOutlined />}
+                  onClick={handlePlaceOrder}
+                  loading={loadingOrder}
+                  block
+                >
+                  支付订单
+                </Button>
+
+                {orderResult && (
+                  <div
+                    className={`rounded p-2 text-sm ${
+                      orderResult.success
+                        ? "bg-green-50 text-green-700"
+                        : "bg-red-50 text-red-700"
+                    }`}
+                  >
+                    {orderResult.message}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
