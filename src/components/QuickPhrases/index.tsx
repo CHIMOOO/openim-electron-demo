@@ -89,9 +89,9 @@ const QuickPhrases = ({
       onOpenChange={(flag) => {
         if (!flag) onClose();
       }}
-      placement="top"
+      placement="topLeft"
       trigger={[]}
-      overlayClassName="quick-phrases-dropdown"
+      overlayClassName="quick-phrases-dropdown "
       dropdownRender={(menu) => (
         <div className="rounded bg-white shadow-lg" ref={dropdownRef}>
           {loading ? (
