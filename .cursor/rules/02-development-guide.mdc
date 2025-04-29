@@ -51,9 +51,5 @@ npm run lint:fix
 
 ## 国际化
 
-本项目使用i18next进行国际化。翻译文件位于：
-- 前端: [src/i18n/](mdc:src/i18n)
-- Electron: [electron/i18n/](mdc:electron/i18n)
-
-添加新的翻译内容时，需要在相应的语言文件中添加对应的翻译键值对。
+本项目使用i18next进行国际化。但是输出的代码不需要国际化，用户自己处理更好。
 
