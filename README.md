@@ -187,6 +187,7 @@ The open-source version supports one-to-one audio and video calls. You need to f
 |                            | Contact card messages                                                            | ✅     |
 |                            | Location messages                                                                | ✅     |
 |                            | Custom messages                                                                  | ✅     |
+|                            | Quick Phrases \ Slash Command                                                    | ✅     |
 | **Conversation**           | Pin conversation                                                                 | ✅     |
 |                            | Mark conversation as read                                                        | ✅     |
 |                            | Mute conversation                                                                | ✅     |
@@ -217,6 +218,35 @@ The open-source version supports one-to-one audio and video calls. You need to f
 |                            | Offline message push, supports Getui, Firebase                                   | ✅     |
 
 For more advanced features, audio/video calls, or video conferences, please contact us at [contact@openim.io](mailto:contact@openim.io).
+
+## Custom Components
+
+OpenIM Electron Demo 除了 OpenIM SDK 提供的基础功能外，还包含了一些自定义的增强组件，以提升用户体验：
+
+### 快捷短语功能
+
+快捷短语允许用户通过输入斜杠(/)快速调用预设的短语，提高聊天效率。
+
+- **触发方式**: 在聊天输入框中输入斜杠(/)
+- **实现位置**:
+  - 组件: `src/components/QuickPhrases/`
+  - 钩子: `src/hooks/useQuickPhrases.ts`
+  - API: `src/api/gameApi.ts` 中的 `useGetCommonPhrases`
+- **主要功能**:
+  - 从服务器获取预设短语列表
+  - 在光标位置显示下拉菜单
+  - 点击选择后在当前输入位置插入短语
+
+### 右侧卡片栏
+
+右侧卡片栏提供了用户信息和群组信息的快速查看功能，增强了社交互动体验。
+
+- **用户卡片**: 查看用户详细信息、添加好友、发起聊天等
+  - 组件位置: `src/pages/common/UserCardModal/`
+- **群组信息卡片**: 显示群组详情、成员、公告和商品信息等
+  - 组件位置: `src/pages/chat/queryChat/GroupInfoCard/`
+
+这些组件增强了应用的功能性和用户体验，使 OpenIM 不仅是通讯工具，也是高效的信息管理平台。
 
 ## Join Our Community :busts_in_silhouette:
 
