@@ -9,7 +9,7 @@ import { feedbackToast } from "./common";
 
 const tokenErrorCodeList = [1501, 1503, 1504, 1505];
 
-const createAxiosInstance = (baseURL: string, imToken = true) => {
+const createAxiosInstance = (baseURL: string, imToken = true, checkErrCode = true) => {
   const serves = axios.create({
     baseURL,
     timeout: 25000,
@@ -27,17 +27,19 @@ const createAxiosInstance = (baseURL: string, imToken = true) => {
 
   serves.interceptors.response.use(
     (res) => {
-      if (tokenErrorCodeList.includes(res.data.errCode)) {
-        feedbackToast({
-          msg: t("toast.loginExpiration"),
-          error: t("toast.loginExpiration"),
-          onClose: () => {
-            useUserStore.getState().userLogout(true);
-          },
-        });
-      }
-      if (res.data.errCode !== 0) {
-        return Promise.reject(res.data);
+      if (checkErrCode) {
+        if (tokenErrorCodeList.includes(res.data.errCode)) {
+          feedbackToast({
+            msg: t("toast.loginExpiration"),
+            error: t("toast.loginExpiration"),
+            onClose: () => {
+              useUserStore.getState().userLogout(true);
+            },
+          });
+        }
+        if (res.data.errCode !== 0) {
+          return Promise.reject(res.data);
+        }
       }
       return res.data;
     },

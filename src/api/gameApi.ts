@@ -6,7 +6,14 @@ import { getChatToken } from "@/utils/storage";
 
 import { errorHandle } from "./errorHandle";
 
-const request = createAxiosInstance(import.meta.env.VITE_GAME_URL as string);
+// 根据环境使用不同的URL
+// 开发环境使用代理地址，生产环境直接使用目标地址
+const isDev = import.meta.env.MODE === "development";
+const baseURL = isDev ? "/baseApi" : "http://175.178.161.210:8080";
+const request = createAxiosInstance(baseURL);
+
+// 创建Axios实例但不检查errCode
+const noCheckRequest = createAxiosInstance(baseURL, false, false);
 
 // 用户注册
 export const useRegister = () => {
@@ -685,7 +692,7 @@ export const useChangePassword = () => {
 export const useWebLogin = () => {
   return useMutation(
     (params: API.Game.WebLoginParams) =>
-      request.post("/api/web_login", params, {
+      noCheckRequest.post("/api/web_login", params, {
         headers: {
           operationID: uuidv4(),
         },

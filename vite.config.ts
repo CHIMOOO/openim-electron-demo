@@ -11,11 +11,12 @@ const require = createRequire(import.meta.url);
 // import visualizer from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command }) => {
+export default defineConfig(({ command, mode }) => {
   rmSync("dist-electron", { recursive: true, force: true });
 
   const sourcemap = command === "serve" || !!process.env.VSCODE_DEBUG;
   const isWebOnly = process.env.VITE_WEB_ONLY === 'true';
+  const isDev = mode === 'development';
 
   return {
     resolve: {
@@ -59,15 +60,26 @@ export default defineConfig(({ command }) => {
       // }),
       // visualizer({ open: true }),
     ],
-    server: !!process.env.VSCODE_DEBUG
-      ? (() => {
-        const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
-        return {
-          host: url.hostname,
-          port: +url.port,
-        };
-      })()
-      : undefined,
+    server: {
+      ...(!!process.env.VSCODE_DEBUG
+        ? (() => {
+          const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
+          return {
+            host: url.hostname,
+            port: +url.port,
+          };
+        })()
+        : {}),
+      // 添加代理配置解决跨域问题
+      proxy: isDev ? {
+        '/baseApi': {
+          target: 'http://175.178.161.210:8080',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/baseApi/, ''),
+          secure: false
+        }
+      } : undefined
+    },
     clearScreen: false,
     build: {
       sourcemap: false,

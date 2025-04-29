@@ -57,6 +57,8 @@ const LoginForm = ({ loginMethod, setFormType, updateLoginMethod }: LoginFormPro
 
   const onFinish = (params: API.Login.LoginParams) => {
     setIsSubmitting(true);
+    // 保存原始密码用于webLogin
+    const originalPassword = params.password;
     if (loginType === 0) {
       params.password = md5(params.password ?? "");
     }
@@ -72,26 +74,39 @@ const LoginForm = ({ loginMethod, setFormType, updateLoginMethod }: LoginFormPro
         const { chatToken, imToken, userID } = data.data;
         setIMProfile({ chatToken, imToken, userID });
 
-        // 调用Web登录接口
+        // 调用Web登录接口，使用原始密码
         webLogin(
           {
-            type: 1, // 窗口登录
+            type: 1, // 账号密码登录
             username: params.phoneNumber || params.email || "",
-            password: params.password || "",
+            password: originalPassword || "",
             platform: 5, // web平台
           },
           {
-            onSuccess: (webData) => {
-              // 保存Web登录令牌
-              if (webData.data && typeof webData.data.token === "string") {
-                localStorage.setItem("token", webData.data.token as string);
+            onSuccess: (webData: any) => {
+              // 详细记录响应数据结构
+              console.log("Web登录响应:", JSON.stringify(webData));
+
+              // 检查响应格式是否正确
+              if (
+                webData &&
+                webData.code === 200 &&
+                webData.data &&
+                webData.data.token
+              ) {
+                localStorage.setItem("token", String(webData.data.token));
+                // 两个接口都成功后导航到聊天页面
+                setIsSubmitting(false);
+                navigate("/chat");
+              } else {
+                console.error("Web登录响应格式错误:", webData);
+                message.error(`接入坐席失败: ${webData?.msg || "响应格式错误"}`);
+                setIsSubmitting(false);
               }
-              // 两个接口都成功后导航到聊天页面
-              setIsSubmitting(false);
-              navigate("/chat");
             },
-            onError: () => {
-              message.error("接入坐席失败");
+            onError: (error: any) => {
+              console.error("Web登录失败:", error);
+              message.error(`接入坐席失败: ${error?.message || "未知错误"}`);
               setIsSubmitting(false);
             },
           },
