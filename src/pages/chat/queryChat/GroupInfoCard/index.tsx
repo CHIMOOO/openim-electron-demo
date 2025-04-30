@@ -12,11 +12,26 @@ import { feedbackToast } from "@/utils/common";
 import { useGroupInfoApi } from "./useGroupInfoApi";
 import { useProductAndOrderApi } from "./useProductAndOrderApi";
 
-interface GroupInfoCardProps {
-  onViewDetails?: () => void;
+// 订单数据类型定义
+interface OrderData {
+  success?: boolean;
+  message?: string;
+  order_id?: string | number;
+  price?: number;
+  status?: number;
+  created_time?: string;
+  user_id?: number;
+  goods_id?: number;
+  quantity?: number;
+  [key: string]: any;
 }
 
-const GroupInfoCard: FC<GroupInfoCardProps> = ({ onViewDetails }) => {
+interface GroupInfoCardProps {
+  onViewDetails?: () => void;
+  orderData?: OrderData | null; // 修改为允许 null 值
+}
+
+const GroupInfoCard: FC<GroupInfoCardProps> = ({ onViewDetails, orderData }) => {
   const currentGroupInfo = useConversationStore((state) => state.currentGroupInfo);
   const currentMemberInGroup = useConversationStore(
     (state) => state.currentMemberInGroup,
@@ -34,9 +49,13 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({ onViewDetails }) => {
 
   const [orderId, setOrderId] = useState<string>("");
   const { isOwner, isAdmin } = useCurrentMemberRole();
-  const [_, copyToClipboard] = useCopyToClipboard();
+  const [_copyResult, copyToClipboard] = useCopyToClipboard();
 
-  const hasPermissions = isAdmin || isOwner;
+  // 虽然未直接使用，但保留以备将来使用
+  // const hasPermissions = isAdmin || isOwner;
+
+  // 如果从 props 接收到了 orderData，优先使用
+  const displayOrderData = orderData || orderResult;
 
   if (!currentGroupInfo) {
     return null;
@@ -112,6 +131,7 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({ onViewDetails }) => {
                   <div>商品ID: {apiGroup.good_id}</div>
                   <div>卖家ID: {apiGroup.seller_id}</div>
                   <div>买家ID: {apiGroup.buyer_id}</div>
+                  {apiGroup.order_id && <div>订单ID: {apiGroup.order_id}</div>}
                 </div>
               </div>
             </div>
@@ -183,7 +203,7 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({ onViewDetails }) => {
                       size="small"
                       onClick={() => {
                         if (apiGroup?.good_id) {
-                          fetchProductDetails(String(apiGroup.good_id));
+                          fetchProductDetails(Number(apiGroup.good_id));
                         }
                       }}
                     >
@@ -226,6 +246,48 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({ onViewDetails }) => {
             </div>
           </div>
 
+          {/* 订单信息部分 */}
+          {displayOrderData && (
+            <div className="mb-2">
+              <div className="flex flex-col">
+                <span className="mb-1 text-sm font-medium text-gray-600">订单信息</span>
+                <div className="rounded-md bg-gray-50 p-2 text-xs text-gray-700">
+                  {displayOrderData.success !== undefined && (
+                    <div
+                      className={
+                        displayOrderData.success ? "text-green-600" : "text-red-600"
+                      }
+                    >
+                      状态: {displayOrderData.success ? "成功" : "失败"}
+                    </div>
+                  )}
+                  {displayOrderData.message && (
+                    <div>消息: {displayOrderData.message}</div>
+                  )}
+                  {displayOrderData.goods_id && (
+                    <div>商品ID: {displayOrderData.goods_id}</div>
+                  )}
+                  {displayOrderData.order_id && (
+                    <div>订单ID: {displayOrderData.order_id}</div>
+                  )}
+                  {/* 可以根据实际返回数据结构添加更多字段 */}
+                  {displayOrderData.price !== undefined && (
+                    <div>价格: ¥{displayOrderData.price}</div>
+                  )}
+                  {displayOrderData.status !== undefined && (
+                    <div>状态码: {displayOrderData.status}</div>
+                  )}
+                  {displayOrderData.created_time && (
+                    <div>
+                      创建时间:{" "}
+                      {new Date(String(displayOrderData.created_time)).toLocaleString()}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* 订单操作部分 */}
           {productData?.is_play === 1 && !productData.is_self && (
             <div className="mt-3 border-t border-gray-100 pt-3">
@@ -247,7 +309,7 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({ onViewDetails }) => {
                   支付订单
                 </Button>
 
-                {orderResult && (
+                {orderResult && !orderData && (
                   <div
                     className={`rounded p-2 text-sm ${
                       orderResult.success

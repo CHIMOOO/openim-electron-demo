@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useMutation } from "react-query";
 
 import createAxiosInstance from "@/utils/request";
-import { getChatToken } from "@/utils/storage";
+// import { getChatToken } from "@/utils/storage";
 
 import { errorHandle } from "./errorHandle";
 
@@ -10,7 +10,8 @@ import { errorHandle } from "./errorHandle";
 // 开发环境使用代理地址，生产环境直接使用目标地址
 const isDev = import.meta.env.MODE === "development";
 const baseURL = isDev ? "/baseApi" : "http://175.178.161.210:8080";
-const request = createAxiosInstance(baseURL);
+// 虽然 request 未使用，但可能是预留的，用注释标记
+// const request = createAxiosInstance(baseURL);
 
 // 创建Axios实例但不检查errCode
 const noCheckRequest = createAxiosInstance(baseURL, false, false);
@@ -776,6 +777,22 @@ export const useGetOrderList = () => {
   return useMutation(
     (params: API.Game.OrderListParams) =>
       noCheckRequest.post("/api/order/order_list", params, {
+        headers: {
+          Authorization: localStorage.getItem("token") || "",
+          operationID: uuidv4(),
+        },
+      }),
+    {
+      onError: errorHandle,
+    },
+  );
+};
+
+// 获取订单详情
+export const useGetOrderDetails = () => {
+  return useMutation(
+    (params: API.Game.OrderDetailsParams) =>
+      noCheckRequest.post("/api/order/order_details", params, {
         headers: {
           Authorization: localStorage.getItem("token") || "",
           operationID: uuidv4(),

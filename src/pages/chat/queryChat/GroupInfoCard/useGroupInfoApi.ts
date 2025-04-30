@@ -14,6 +14,7 @@ interface GroupInfoApiData {
     seller_id: number;
     buyer_id: number;
     good_id: number;
+    order_id?: string | number;
     status: number;
     created_time: string;
     updated_time: string;
@@ -32,7 +33,7 @@ export function useGroupInfoApi() {
 
   // 请求标识符，用于处理组件卸载后异步回调的问题
   const requestIdRef = useRef(0);
-
+  // 获取api/im_group/get_groupinfo_by_imgroupid
   const getGroupInfoMutation = useGetGroupInfo();
 
   // 创建请求函数，返回可缓存的Promise
@@ -45,9 +46,9 @@ export function useGroupInfoApi() {
             const data = response.data as GroupInfoApiData;
             resolve(data);
           },
-          onError: (err) => {
-            console.error("获取群组信息失败", err);
-            reject(err);
+          onError: (error) => {
+            console.error("获取群组信息失败", error);
+            reject(error);
           },
         },
       );
@@ -81,7 +82,7 @@ export function useGroupInfoApi() {
           setLoading(false);
         }
       })
-      .catch((err) => {
+      .catch((error) => {
         // 仅当组件未卸载时更新状态
         if (currentRequestId === requestIdRef.current) {
           setError("获取群组信息失败");
@@ -123,7 +124,7 @@ export function useGroupInfoApi() {
           setLoading(false);
         }
       })
-      .catch((err) => {
+      .catch((error) => {
         if (currentRequestId === requestIdRef.current) {
           setError("获取群组信息失败");
           setLoading(false);

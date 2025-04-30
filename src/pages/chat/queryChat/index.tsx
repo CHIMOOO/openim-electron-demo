@@ -14,6 +14,7 @@ import ChatFooter from "./ChatFooter";
 import ChatHeader from "./ChatHeader";
 import GroupInfoCard from "./GroupInfoCard";
 import GroupSetting from "./GroupSetting";
+import { useAutoQueryOrder } from "./useAutoQueryOrder";
 import useConversationState from "./useConversationState";
 
 export const QueryChat = () => {
@@ -26,6 +27,8 @@ export const QueryChat = () => {
   );
 
   const isGroupSession = currentConversation?.conversationType === SessionType.Group;
+
+  const { orderData } = useAutoQueryOrder();
 
   useConversationState();
 
@@ -61,7 +64,7 @@ export const QueryChat = () => {
       </div>
       {isGroupSession && (
         <div className="flex h-full w-[280px] flex-shrink-0 flex-col">
-          <GroupInfoCard onViewDetails={openGroupSettings} />
+          <GroupInfoCard onViewDetails={openGroupSettings} orderData={orderData} />
         </div>
       )}
       <GroupSetting ref={groupSettingRef} />

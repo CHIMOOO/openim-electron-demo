@@ -309,6 +309,10 @@ declare namespace API {
       type?: number;
     };
 
+    type OrderDetailsParams = {
+      order_id: number;
+    };
+
     type CommonPhrasesResponse = {
       data: Array<{
         id: number;
