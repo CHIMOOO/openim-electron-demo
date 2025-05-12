@@ -1,308 +1,187 @@
-# GroupInfoCard 群组信息卡片
+# GroupInfoCard 组件
 
-群组信息卡片是一个位于聊天界面右侧的组件，用于展示当前群组的详细信息，包括基本信息、成员信息、商品信息和交易功能。
+群聊信息卡片组件，用于展示群聊基本信息、商品详情和订单信息。
 
-## 功能概述
+## 组件功能
 
-- 显示群组基本信息（群名称、群 ID、创建时间等）
-- 展示群成员数量和管理信息
-- 显示群公告
-- 提供与商品相关的详细信息（如果是商品群）
-- 支持交易功能（订单支付）
-- 提供数据复制功能
+- 显示群聊基本信息（名称、ID、成员数量等）
+- 显示商品详情（标题、价格、属性等）
+- 显示订单信息（状态、金额、交易流程等）
+- 提供订单操作功能（支付订单）
 
-## 文件结构
+## 组件结构
 
 ```
-src/pages/chat/queryChat/GroupInfoCard/
-├── index.tsx                  # 主组件文件
-├── useGroupInfoApi.ts         # 群组信息API钩子
-├── useProductAndOrderApi.ts   # 商品和订单API钩子
-└── README.md                  # 文档
+GroupInfoCard/
+├── index.tsx               # 主组件
+├── ProductDetailDisplay.tsx # 商品详情展示组件
+├── OrderDetailDisplay.tsx   # 订单详情展示组件
+├── types.ts                # 类型定义
+├── useGroupInfoApi.ts      # 群组API Hook
+├── useProductAndOrderApi.ts # 商品和订单API Hook
+└── README.md               # 使用文档
+```
+
+## 使用方式
+
+### 基本使用
+
+```tsx
+import GroupInfoCard from "@/pages/chat/queryChat/GroupInfoCard";
+
+const App = () => {
+  const handleViewDetails = () => {
+    // 处理查看更多详情的逻辑
+    console.log("View more details");
+  };
+
+  return (
+    <div className="flex h-screen">
+      <div className="flex-1">{/* 聊天内容区域 */}</div>
+      <div className="w-80">
+        <GroupInfoCard onViewDetails={handleViewDetails} />
+      </div>
+    </div>
+  );
+};
+```
+
+### 传入外部商品和订单数据
+
+```tsx
+import GroupInfoCard from "@/pages/chat/queryChat/GroupInfoCard";
+import { ProductDetail, OrderDetail } from "@/pages/chat/queryChat/GroupInfoCard/types";
+
+const App = () => {
+  // 示例商品数据
+  const productData: ProductDetail = {
+    id: 57,
+    content: [
+      {
+        is_required: 1,
+        is_show: 1,
+        is_sort: 1,
+        key: "游戏段位",
+        key_sort: 13,
+        sort_type: 1,
+        type: 3,
+        value: "黄金1",
+      },
+      // ... 其他商品属性
+    ],
+    category_id: 1,
+    is_inspect: 1,
+    sort: 100,
+    is_indulge: 1,
+    is_authentication: 1,
+    is_account_source: 1,
+    sending_id: 1,
+    penalty_id: 1,
+    account: "chen11oopp",
+    title: "王者荣耀售卖超级牛逼的账号先到先得",
+    image:
+      "https://img2.baidu.com/it/u=3192240317,2727236332&fm=253&fmt=auto&app=120&f=JPEG?w=1422&h=800",
+    retail_price: 1000,
+    actual_price: 949.5,
+    cost_price: null,
+    connect: "276806275",
+    text: "这个账号超级牛逼的快点来买啊",
+    label: "包赔服务,验证账号",
+    is_play: 0,
+    is_self: false,
+    user_id: 59,
+    is_reparation: 1,
+    reparation_id: 11,
+    review_status: 1,
+    game_name: "王者荣耀",
+    goods_no: "NO5204038363397044753961977773",
+    category_name: "游戏账号",
+    submit_time: "2025-04-27 13:55:07",
+    release_time: "2025-04-25 17:57:11",
+    seller_service_ratio: null,
+    seller_service_price: null,
+  };
+
+  // 示例订单数据
+  const orderData: OrderDetail = {
+    id: 17,
+    goods_id: 57,
+    game_id: 18,
+    goods_title: "王者荣耀售卖超级牛逼的账号先到先得",
+    goods_no: "NO5204038363397044753961977773",
+    goods_image:
+      "https://img2.baidu.com/it/u=3192240317,2727236332&fm=253&fmt=auto&app=120&f=JPEG?w=1422&h=800",
+    order_no: "NO1952765272014818644557757517",
+    goods_price: 1000,
+    payment_price: 1160.5,
+    reparation_price: 100,
+    pattern_price: 60.5,
+    payment_type: 1,
+    status: 0,
+    status_zh: "待付款",
+    pattern_name: "自由交易",
+    game_service_name: "",
+    device_name: "苹果",
+    operator_name: "QQ",
+    place_time: "",
+    pay_time: "",
+    deal_time: "",
+    take_time: "",
+    cancel_time: "",
+    refund_time: "",
+    system_refund_time: "",
+    verify_time: "",
+    send_time: "",
+    refund_content: "",
+    unpaid_conf_time: 30,
+    verify_conf_time: 0,
+    take_conf_time: 0,
+  };
+
+  return (
+    <div className="flex h-screen">
+      <div className="flex-1">{/* 聊天内容区域 */}</div>
+      <div className="w-80">
+        <GroupInfoCard
+          onViewDetails={() => console.log("View more details")}
+          productData={productData}
+          orderData={orderData}
+        />
+      </div>
+    </div>
+  );
+};
 ```
 
 ## 组件 API
 
-### Props
+### GroupInfoCard
 
-| 属性名        | 类型       | 默认值 | 描述                       |
-| ------------- | ---------- | ------ | -------------------------- |
-| onViewDetails | () => void | -      | 点击查看更多详情的回调函数 |
+| 属性          | 类型                             | 必填 | 默认值 | 描述                           |
+| ------------- | -------------------------------- | ---- | ------ | ------------------------------ |
+| onViewDetails | () => void                       | 否   | -      | 点击查看更多详情按钮的回调函数 |
+| orderData     | OrderDetail \| OrderData \| null | 否   | null   | 外部传入的订单数据             |
+| productData   | ProductDetail \| null            | 否   | null   | 外部传入的商品数据             |
 
-## 实现细节
+### ProductDetailDisplay
 
-### 数据获取
+展示商品详细信息的组件，可单独使用。
 
-群组信息卡片使用自定义钩子进行数据获取：
+| 属性        | 类型                  | 必填 | 默认值 | 描述                   |
+| ----------- | --------------------- | ---- | ------ | ---------------------- |
+| productData | ProductDetail \| null | 是   | -      | 商品详情数据           |
+| loading     | boolean               | 否   | false  | 加载状态               |
+| error       | string \| null        | 否   | null   | 错误信息               |
+| onRetry     | () => void            | 否   | -      | 重试加载数据的回调函数 |
 
-1. **useGroupInfoApi** - 获取群组的基本信息和 API 相关数据
+### OrderDetailDisplay
 
-   ```tsx
-   const { groupApiInfo, loading, error, refetch } = useGroupInfoApi();
-   ```
+展示订单详细信息的组件，可单独使用。
 
-2. **useProductAndOrderApi** - 获取商品信息和处理订单
-   ```tsx
-   const {
-     productData,
-     loadingProduct,
-     productError,
-     orderResult,
-     loadingOrder,
-     placeOrder,
-     fetchProductDetails,
-   } = useProductAndOrderApi();
-   ```
-
-### 群组权限检查
-
-组件使用`useCurrentMemberRole`钩子检查当前用户在群组中的角色：
-
-```tsx
-const { isOwner, isAdmin } = useCurrentMemberRole();
-const hasPermissions = isAdmin || isOwner;
-```
-
-### 主要功能实现
-
-#### 1. 复制群 ID
-
-```tsx
-const copyGroupId = () => {
-  copyToClipboard(currentGroupInfo.groupID);
-  feedbackToast({ msg: "复制成功" });
-};
-```
-
-#### 2. 订单支付
-
-```tsx
-const handlePlaceOrder = () => {
-  if (!orderId) {
-    message.warning("请输入订单ID");
-    return;
-  }
-
-  placeOrder(orderId);
-};
-```
-
-### 渲染逻辑
-
-组件根据不同的数据状态和群组类型渲染不同的内容：
-
-```tsx
-return (
-  <div className="flex h-full flex-col border-l border-gray-200 bg-white p-4">
-    {/* 群组头像和名称 */}
-    <div className="mb-4 flex items-center justify-center">{/* ... */}</div>
-
-    <Divider className="my-2" />
-
-    {loading ? (
-      <div className="space-y-4">
-        <Skeleton active paragraph={{ rows: 3 }} />
-      </div>
-    ) : (
-      <>
-        {/* 群ID */}
-        <div className="mb-2">{/* ... */}</div>
-
-        {/* 商品信息（如果存在） */}
-        {apiGroup && <div className="mb-2">{/* ... */}</div>}
-
-        {/* 群成员 */}
-        <div className="mb-2">{/* ... */}</div>
-
-        {/* 群公告 */}
-        {currentGroupInfo.notification && <div className="mb-2">{/* ... */}</div>}
-
-        {/* 创建时间 */}
-        {apiGroup && <div className="mb-2">{/* ... */}</div>}
-
-        {/* 加入时间 */}
-        {currentMemberInGroup?.joinTime && <div className="mb-2">{/* ... */}</div>}
-
-        {/* 错误提示 */}
-        {error && (
-          <div className="mb-2 rounded-md bg-red-50 p-2 text-xs text-red-600">
-            {/* ... */}
-          </div>
-        )}
-
-        {/* 商品详情 */}
-        <div className="mb-2">{/* ... */}</div>
-
-        {/* 订单操作（如果商品可购买且不是自己的商品） */}
-        {productData?.is_play === 1 && !productData.is_self && (
-          <div className="mt-3 border-t border-gray-100 pt-3">{/* ... */}</div>
-        )}
-
-        {/* 订单结果反馈 */}
-        {orderResult && <div className="mt-2">{/* ... */}</div>}
-
-        {/* 查看更多按钮 */}
-        <div className="mt-auto pt-4">
-          <Button block onClick={onViewDetails}>
-            查看更多
-          </Button>
-        </div>
-      </>
-    )}
-  </div>
-);
-```
-
-## 商品详情展示
-
-群组信息卡片特别关注商品信息的展示，包括：
-
-- 商品标题
-- 价格
-- 标签
-- 是否可购买的状态标识
-
-```tsx
-{
-  productData ? (
-    <div className="space-y-2">
-      {productData.title && (
-        <div className="font-medium">
-          {productData.title}
-          {productData.is_play === 1 && (
-            <Tag className="ml-2" color="green">
-              可购买
-            </Tag>
-          )}
-        </div>
-      )}
-
-      {productData.retail_price && (
-        <div className="font-bold text-red-600">
-          价格: ￥{productData.retail_price.toFixed(2)}
-        </div>
-      )}
-
-      {productData.label && (
-        <div className="flex flex-wrap gap-1">
-          {productData.label.split(",").map((tag, index) => (
-            <Tag key={index} color="blue">
-              {tag}
-            </Tag>
-          ))}
-        </div>
-      )}
-    </div>
-  ) : (
-    <div className="text-xs text-gray-500">暂无商品信息</div>
-  );
-}
-```
-
-## 订单操作
-
-对于可购买的商品，组件提供了订单支付功能：
-
-```tsx
-<div className="mt-3 border-t border-gray-100 pt-3">
-  <div className="flex flex-col gap-2">
-    <input
-      type="text"
-      value={orderId}
-      onChange={(e) => setOrderId(e.target.value)}
-      placeholder="输入订单ID"
-      className="rounded border border-gray-300 px-3 py-2 text-sm"
-    />
-    <Button
-      type="primary"
-      icon={<ShoppingCartOutlined />}
-      onClick={handlePlaceOrder}
-      loading={loadingOrder}
-      block
-    >
-      支付订单
-    </Button>
-  </div>
-</div>
-```
-
-## API 钩子详解
-
-### useGroupInfoApi
-
-用于获取群组的 API 信息：
-
-```tsx
-export const useGroupInfoApi = () => {
-  const currentGroupInfo = useConversationStore((state) => state.currentGroupInfo);
-  const [groupApiInfo, setGroupApiInfo] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchGroupInfo = useCallback(async () => {
-    if (!currentGroupInfo?.groupID) return;
-
-    setLoading(true);
-    setError(null);
-    try {
-      // 调用API获取群组信息
-      const response = await fetch(
-        `/api/group/info?groupID=${currentGroupInfo.groupID}`,
-      );
-      const data = await response.json();
-
-      if (data.code === 0) {
-        setGroupApiInfo(data.data);
-      } else {
-        setError(data.message || "获取群组信息失败");
-      }
-    } catch (err) {
-      setError("网络错误，请稍后重试");
-      console.error("获取群组信息出错:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentGroupInfo?.groupID]);
-
-  useEffect(() => {
-    fetchGroupInfo();
-  }, [fetchGroupInfo]);
-
-  return { groupApiInfo, loading, error, refetch: fetchGroupInfo };
-};
-```
-
-### useProductAndOrderApi
-
-用于获取商品信息和处理订单：
-
-```tsx
-export const useProductAndOrderApi = () => {
-  const [productData, setProductData] = useState<any>(null);
-  const [loadingProduct, setLoadingProduct] = useState(false);
-  const [productError, setProductError] = useState<string | null>(null);
-
-  const [orderResult, setOrderResult] = useState<any>(null);
-  const [loadingOrder, setLoadingOrder] = useState(false);
-
-  // 获取商品详情和处理订单的实现...
-
-  return {
-    productData,
-    loadingProduct,
-    productError,
-    orderResult,
-    loadingOrder,
-    placeOrder,
-    fetchProductDetails,
-  };
-};
-```
-
-## 注意事项
-
-1. **性能优化**: 使用`React.memo`优化渲染性能
-2. **错误处理**: 提供错误提示和重试机制
-3. **数据加载状态**: 使用骨架屏提升用户体验
-4. **权限控制**: 根据用户角色显示不同功能
-5. **商品交易**: 支持交易功能需要在 API 中适当配置
+| 属性             | 类型                             | 必填 | 默认值 | 描述                     |
+| ---------------- | -------------------------------- | ---- | ------ | ------------------------ |
+| orderData        | OrderDetail \| OrderData \| null | 是   | -      | 订单详情数据             |
+| loading          | boolean                          | 否   | false  | 加载状态                 |
+| error            | string \| null                   | 否   | null   | 错误信息                 |
+| onRetry          | () => void                       | 否   | -      | 重试加载数据的回调函数   |
+| showDetailedInfo | boolean                          | 否   | false  | 是否显示更详细的订单信息 |
