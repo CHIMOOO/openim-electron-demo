@@ -46,10 +46,10 @@ export function useGroupInfoApi() {
             const data = response.data as GroupInfoApiData;
             resolve(data);
           },
-          // onError: (error) => {
-          //   console.error("获取群组信息失败", error);
-          //   reject(error);
-          // },
+          onError: (error) => {
+            console.error("获取群组信息失败", error);
+            reject(error);
+          },
         },
       );
     });
@@ -85,6 +85,7 @@ export function useGroupInfoApi() {
       .catch((error) => {
         // 仅当组件未卸载时更新状态
         if (currentRequestId === requestIdRef.current) {
+          console.error("获取群组信息失败", error);
           setError("获取群组信息失败");
           setLoading(false);
         }
@@ -126,6 +127,7 @@ export function useGroupInfoApi() {
       })
       .catch((error) => {
         if (currentRequestId === requestIdRef.current) {
+          console.error("获取群组信息失败", error);
           setError("获取群组信息失败");
           setLoading(false);
         }

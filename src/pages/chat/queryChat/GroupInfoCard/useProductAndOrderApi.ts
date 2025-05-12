@@ -124,11 +124,11 @@ export function useProductAndOrderApi(goodId?: string) {
           setProductData(responseData.data);
           setLoadingProduct(false);
         },
-        // onError: (err) => {
-        //   console.error("获取商品详情失败", err);
-        //   setProductError("获取商品详情失败");
-        //   setLoadingProduct(false);
-        // },
+        onError: (err) => {
+          console.error("获取商品详情失败", err);
+          setProductError("获取商品详情失败");
+          setLoadingProduct(false);
+        },
       },
     );
   };
@@ -150,11 +150,11 @@ export function useProductAndOrderApi(goodId?: string) {
           });
           setLoadingOrder(false);
         },
-        // onError: (err) => {
-        //   console.error("订单支付失败", err);
-        //   setOrderError("订单支付失败");
-        //   setLoadingOrder(false);
-        // },
+        onError: (err) => {
+          console.error("订单支付失败", err);
+          setOrderError("订单支付失败");
+          setLoadingOrder(false);
+        },
       },
     );
   };

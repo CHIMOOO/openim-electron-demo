@@ -119,11 +119,13 @@ export function useAutoQueryOrder() {
           setOrderData(result);
           setLoading(false);
         },
-        // onError: (err) => {
-        //   console.error("订单信息查询失败:", err);
-        //   setError("订单信息查询失败");
-        //   setLoading(false);
-        // }
+        onError: (err) => {
+          console.error("订单信息查询失败:", err);
+          setError("订单信息查询失败");
+          setLoading(false);
+          // 失败时移除记录的ID，以便下次可以重试
+          lastQueriedOrderIdRef.current = null;
+        },
       },
     );
   };
