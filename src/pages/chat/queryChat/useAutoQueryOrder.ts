@@ -95,6 +95,7 @@ export function useAutoQueryOrder() {
       {
         onSuccess: (response) => {
           const responseData = response.data as ApiResponse<OrderDetailsResponse>;
+          console.log("订单详情查询成功", responseData);
           // 构造 OrderResult 对象
           const result: OrderResult = {
             success: responseData.code === 200,
@@ -105,11 +106,6 @@ export function useAutoQueryOrder() {
           setOrderData(result);
           setLoading(false);
           console.log("订单信息查询成功:", responseData);
-        },
-        onError: (err) => {
-          console.error("订单信息查询失败", err);
-          setError("订单信息查询失败");
-          setLoading(false);
         },
       },
     );

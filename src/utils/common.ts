@@ -28,9 +28,6 @@ export const feedbackToast = (config?: FeedbackToastParams) => {
     duration,
     onClose,
   });
-  if (error) {
-    console.error(msg, error);
-  }
 };
 
 export const canSendImageTypeList = ["png", "jpg", "jpeg", "gif", "bmp", "webp"];

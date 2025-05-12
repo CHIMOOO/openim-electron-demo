@@ -120,14 +120,15 @@ export function useProductAndOrderApi(goodId?: string) {
         onSuccess: (response) => {
           const responseData =
             response.data as unknown as ApiResponse<GoodsDetailsData>;
+          console.log("获取商品详情成功", responseData);
           setProductData(responseData.data);
           setLoadingProduct(false);
         },
-        onError: (err) => {
-          console.error("获取商品详情失败", err);
-          setProductError("获取商品详情失败");
-          setLoadingProduct(false);
-        },
+        // onError: (err) => {
+        //   console.error("获取商品详情失败", err);
+        //   setProductError("获取商品详情失败");
+        //   setLoadingProduct(false);
+        // },
       },
     );
   };
@@ -149,11 +150,11 @@ export function useProductAndOrderApi(goodId?: string) {
           });
           setLoadingOrder(false);
         },
-        onError: (err) => {
-          console.error("订单支付失败", err);
-          setOrderError("订单支付失败");
-          setLoadingOrder(false);
-        },
+        // onError: (err) => {
+        //   console.error("订单支付失败", err);
+        //   setOrderError("订单支付失败");
+        //   setLoadingOrder(false);
+        // },
       },
     );
   };
