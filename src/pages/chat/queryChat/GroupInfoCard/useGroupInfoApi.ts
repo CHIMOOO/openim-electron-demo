@@ -46,10 +46,10 @@ export function useGroupInfoApi() {
             const data = response.data as GroupInfoApiData;
             resolve(data);
           },
-          onError: (error) => {
-            console.error("获取群组信息失败", error);
-            reject(error);
-          },
+          // onError: (error) => {
+          //   console.error("获取群组信息失败", error);
+          //   reject(error);
+          // },
         },
       );
     });

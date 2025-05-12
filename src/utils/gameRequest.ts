@@ -45,7 +45,7 @@ const createGameAxiosInstance = (baseURL: string) => {
           });
         } else {
           // 其他错误显示错误信息
-          const errorMsg = err.response.data?.msg || "请求失败";
+          const errorMsg = err.response.data?.error || "请求失败";
           feedbackToast({
             msg: errorMsg,
             error: errorMsg,

@@ -104,11 +104,11 @@ const LoginForm = ({ loginMethod, setFormType, updateLoginMethod }: LoginFormPro
                 setIsSubmitting(false);
               }
             },
-            onError: (error: any) => {
-              console.error("Web登录失败:", error);
-              message.error(`接入坐席失败: ${error?.message || "未知错误"}`);
-              setIsSubmitting(false);
-            },
+            // onError: (error: any) => {
+            //   console.error("Web登录失败:", error);
+            //   message.error(`接入坐席失败: ${error?.message || "未知错误"}`);
+            //   setIsSubmitting(false);
+            // },
           },
         );
       },

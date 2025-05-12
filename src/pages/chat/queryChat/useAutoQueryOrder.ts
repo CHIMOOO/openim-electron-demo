@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import { useGetOrderDetails } from "@/api/gameApi";
 import { useConversationStore } from "@/store";
@@ -48,6 +48,9 @@ export function useAutoQueryOrder() {
   const [error, setError] = useState<string | null>(null);
   const [orderData, setOrderData] = useState<OrderResult | null>(null);
 
+  // 用于记录最后查询的订单ID，避免重复请求
+  const lastQueriedOrderIdRef = useRef<number | null>(null);
+
   // 获取当前会话和群组信息
   const currentConversation = useConversationStore(
     (state) => state.currentConversation,
@@ -78,6 +81,12 @@ export function useAutoQueryOrder() {
       orderId = parsedOrderId;
     }
 
+    // 检查是否是相同的orderId，避免重复请求
+    if (lastQueriedOrderIdRef.current === orderId && orderData) {
+      console.log("订单信息已存在，跳过重复请求:", orderId);
+      return;
+    }
+
     // 查询订单信息
     queryOrderInfo(orderId);
   }, [currentConversation, groupApiInfo, groupLoading]);
@@ -86,6 +95,10 @@ export function useAutoQueryOrder() {
   const queryOrderInfo = (orderId: number) => {
     if (!orderId) return;
 
+    // 记录当前查询的订单ID
+    lastQueriedOrderIdRef.current = orderId;
+
+    console.log("查询订单信息:", orderId);
     setLoading(true);
     setError(null);
 
@@ -105,8 +118,12 @@ export function useAutoQueryOrder() {
           };
           setOrderData(result);
           setLoading(false);
-          console.log("订单信息查询成功:", responseData);
         },
+        // onError: (err) => {
+        //   console.error("订单信息查询失败:", err);
+        //   setError("订单信息查询失败");
+        //   setLoading(false);
+        // }
       },
     );
   };
@@ -128,6 +145,8 @@ export function useAutoQueryOrder() {
       orderId = parsedOrderId;
     }
 
+    // 重置最后查询的订单ID，强制重新查询
+    lastQueriedOrderIdRef.current = null;
     queryOrderInfo(orderId);
   };
 

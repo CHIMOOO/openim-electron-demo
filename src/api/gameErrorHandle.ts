@@ -19,12 +19,12 @@ export const gameErrorHandle = (error: any) => {
       return;
     }
 
-    // 处理其他HTTP错误
-    const errMsg = error.response.data?.message || `请求失败: ${status}`;
-    feedbackToast({
-      msg: errMsg,
-      error: errMsg,
-    });
+    // // 处理其他HTTP错误
+    // const errMsg = error.response.data?.message || `请求失败: ${status}`;
+    // feedbackToast({
+    //   msg: errMsg,
+    //   error: errMsg,
+    // });
     return;
   }
 
