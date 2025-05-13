@@ -1,12 +1,17 @@
-import { Tag, Image, Skeleton, Badge, Tooltip, Divider } from "antd";
-import { FC, memo } from "react";
+import { Tag, Image, Skeleton, Badge, Tooltip, Divider, Button } from "antd";
+import { FC, memo, useEffect, useRef, useState } from "react";
 import {
   ShopOutlined,
   SafetyCertificateOutlined,
   CheckCircleOutlined,
+  DownOutlined,
+  UpOutlined,
 } from "@ant-design/icons";
 
 import { ProductDetail } from "./types";
+
+// localStorage 键名
+const PRODUCT_ATTRS_EXPANDED_KEY = "product-attributes-expanded";
 
 interface ProductDetailDisplayProps {
   productData: ProductDetail | null;
@@ -21,6 +26,36 @@ const ProductDetailDisplay: FC<ProductDetailDisplayProps> = ({
   error,
   onRetry,
 }) => {
+  // 用于测量内容高度的引用
+  const contentRef = useRef<HTMLDivElement>(null);
+  // 展开/收缩状态
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  // 是否需要展开/收缩按钮
+  const [needToggle, setNeedToggle] = useState<boolean>(false);
+
+  // 初始化时从localStorage读取展开状态
+  useEffect(() => {
+    const savedExpanded = localStorage.getItem(PRODUCT_ATTRS_EXPANDED_KEY);
+    if (savedExpanded !== null) {
+      setIsExpanded(savedExpanded === "true");
+    }
+  }, []);
+
+  // 在内容渲染后检查高度
+  useEffect(() => {
+    if (contentRef.current) {
+      const contentHeight = contentRef.current.scrollHeight;
+      setNeedToggle(contentHeight > 200);
+    }
+  }, [productData]);
+
+  // 切换展开/收缩状态
+  const toggleExpanded = () => {
+    const newState = !isExpanded;
+    setIsExpanded(newState);
+    localStorage.setItem(PRODUCT_ATTRS_EXPANDED_KEY, String(newState));
+  };
+
   if (loading) {
     return <Skeleton active paragraph={{ rows: 3 }} />;
   }
@@ -125,8 +160,28 @@ const ProductDetailDisplay: FC<ProductDetailDisplayProps> = ({
       {/* 动态属性内容 */}
       {sortedContent.length > 0 && (
         <div className="pt-3 mt-3 space-y-2 border-t border-gray-100">
-          <h4 className="text-sm font-medium">商品属性</h4>
-          <div className="p-2 space-y-2 rounded-md bg-gray-50">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-medium">商品属性</h4>
+            {needToggle && (
+              <Button
+                type="link"
+                size="small"
+                onClick={toggleExpanded}
+                icon={isExpanded ? <UpOutlined /> : <DownOutlined />}
+              >
+                {isExpanded ? "收起" : "展开"}
+              </Button>
+            )}
+          </div>
+          <div
+            ref={contentRef}
+            className="p-2 space-y-2 rounded-md bg-gray-50"
+            style={{
+              maxHeight: needToggle && !isExpanded ? "200px" : "none",
+              overflow: needToggle && !isExpanded ? "hidden" : "visible",
+              transition: "max-height 0.3s ease",
+            }}
+          >
             {sortedContent.map((item, index) => (
               <div key={index} className="flex flex-col">
                 <div className="text-xs font-medium text-gray-700">{item.key}</div>

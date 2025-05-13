@@ -53,7 +53,7 @@ const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
 
   if (error) {
     return (
-      <div className="rounded bg-red-50 p-2 text-xs text-red-500">
+      <div className="p-2 text-xs text-red-500 rounded bg-red-50">
         {error}
         {onRetry && (
           <button className="ml-2 text-blue-500 underline" onClick={onRetry}>
@@ -104,10 +104,10 @@ const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
       {isDetailedOrder ? (
         <div className="space-y-3">
           {/* 订单基本信息 */}
-          <div className="rounded-md bg-gray-50 p-3">
+          <div className="p-3 rounded-md bg-gray-50">
             <div className="grid grid-cols-1 gap-2 text-xs text-gray-700">
-              <div className="flex justify-between">
-                <span>订单编号:</span>
+              <div className="flex flex-wrap justify-between">
+                <span className="whitespace-nowrap">订单编号:</span>
                 <span className="font-medium">
                   {(orderData as OrderDetail).order_no}
                 </span>
@@ -126,7 +126,7 @@ const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
                 <span>服务费:</span>
                 <span>¥{(orderData as OrderDetail).pattern_price.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between border-t border-gray-200 pt-1">
+              <div className="flex justify-between pt-1 border-t border-gray-200">
                 <span>实付金额:</span>
                 <span className="font-bold text-red-600">
                   ¥{(orderData as OrderDetail).payment_price.toFixed(2)}
@@ -136,7 +136,7 @@ const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
           </div>
 
           {/* 交易模式信息 */}
-          <div className="rounded-md bg-gray-50 p-3">
+          <div className="p-3 rounded-md bg-gray-50">
             <div className="grid grid-cols-1 gap-2 text-xs text-gray-700">
               <div className="flex justify-between">
                 <span>交易模式:</span>
@@ -157,7 +157,7 @@ const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
           {showDetailedInfo && (
             <div className="mt-3 space-y-2">
               <h4 className="text-sm font-medium">订单时间线</h4>
-              <div className="rounded-md bg-gray-50 p-3">
+              <div className="p-3 rounded-md bg-gray-50">
                 {/* 显示订单的关键时间节点 */}
                 <div className="space-y-2 text-xs">
                   {(orderData as OrderDetail).place_time && (
@@ -202,7 +202,7 @@ const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
           )}
 
           {/* 订单流程 */}
-          <div className="mt-3">
+          {/* <div className="mt-3">
             <Steps
               size="small"
               current={(orderData as OrderDetail).status}
@@ -213,12 +213,12 @@ const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
                 { title: "已完成", icon: <CheckCircleOutlined /> },
               ]}
             />
-          </div>
+          </div> */}
 
           {/* 未支付提示 */}
           {(orderData as OrderDetail).status === 0 &&
             (orderData as OrderDetail).unpaid_conf_time > 0 && (
-              <div className="mt-2 rounded-md bg-yellow-50 p-2 text-xs text-yellow-600">
+              <div className="p-2 mt-2 text-xs text-yellow-600 rounded-md bg-yellow-50">
                 请在 {(orderData as OrderDetail).unpaid_conf_time}{" "}
                 分钟内完成支付，否则订单将自动取消。
               </div>
@@ -226,7 +226,7 @@ const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
         </div>
       ) : (
         // 旧版简易OrderData显示
-        <div className="rounded-md bg-gray-50 p-3">
+        <div className="p-3 rounded-md bg-gray-50">
           <div className="grid grid-cols-1 gap-2 text-xs text-gray-700">
             {orderData.message && (
               <div className="flex justify-between">

@@ -45,7 +45,7 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({
   const apiGroup = groupApiInfo?.imGroup;
 
   return (
-    <div className="flex flex-col h-full p-4 bg-white border-l border-gray-200">
+    <div className="flex flex-col h-full p-4 overflow-y-auto bg-white border-l border-gray-200">
       {/* 群聊成员信息 - 模拟图片 */}
       <div className="mb-4">
         <h3 className="mb-2 text-sm font-medium text-orange-500">群聊成员</h3>
@@ -125,7 +125,7 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({
       )}
 
       {/* 订单信息 */}
-      {/* {displayOrderData && (
+      {displayOrderData && (
         <div className="mb-4">
           <OrderDetailDisplay
             orderData={displayOrderData}
@@ -133,7 +133,7 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({
             showDetailedInfo={false}
           />
         </div>
-      )} */}
+      )}
     </div>
   );
 };
