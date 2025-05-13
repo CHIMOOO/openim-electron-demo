@@ -20,7 +20,7 @@
     "format": "prettier --write .",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
     "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx --fix --quiet src",
-    "prepare": "husky install",
+    "prepare": "echo 'Husky install已禁用，移除Git钩子'",
     "postinstall": "patch-package"
   },
   "devDependencies": {

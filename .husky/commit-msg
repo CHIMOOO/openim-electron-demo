@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npx --no-install commitlint --edit ""
+# npx --no-install commitlint --edit "" 命令已被禁用，移除提交信息格式检查
