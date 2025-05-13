@@ -116,7 +116,7 @@ export function useAutoQueryOrder() {
             order_id: orderId,
             ...(responseData.data || {}),
           };
-          setOrderData(result);
+          setOrderData(responseData);
           setLoading(false);
         },
         onError: (err) => {

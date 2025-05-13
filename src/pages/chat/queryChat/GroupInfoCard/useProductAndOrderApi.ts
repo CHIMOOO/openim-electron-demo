@@ -118,10 +118,10 @@ export function useProductAndOrderApi(goodId?: string) {
       { goods_id: goodsId } as unknown as API.Game.GoodsDetailsParams,
       {
         onSuccess: (response) => {
-          const responseData =
+          const responseData:any =
             response.data as unknown as ApiResponse<GoodsDetailsData>;
           console.log("获取商品详情成功", responseData);
-          setProductData(responseData.data);
+          setProductData(responseData);
           setLoadingProduct(false);
         },
         onError: (err) => {
