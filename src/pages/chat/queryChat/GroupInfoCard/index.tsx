@@ -45,10 +45,10 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({
   const apiGroup = groupApiInfo?.imGroup;
 
   return (
-    <div className="flex h-full flex-col border-l border-gray-200 bg-white p-4">
+    <div className="flex flex-col h-full p-4 bg-white border-l border-gray-200">
       {/* 群聊成员信息 - 模拟图片 */}
       <div className="mb-4">
-        <h3 className="mb-2 text-sm font-medium text-gray-500">群聊成员</h3>
+        <h3 className="mb-2 text-sm font-medium text-orange-500">群聊成员</h3>
         <div className="grid grid-cols-3 space-y-2">
           {/* 客服 - 占位符 */}
           <div className="flex items-center space-x-2">
@@ -89,7 +89,7 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({
             />
           )}
           {error && (
-            <div className="mt-2 rounded-md bg-red-50 p-2 text-xs text-red-600">
+            <div className="p-2 mt-2 text-xs text-red-600 rounded-md bg-red-50">
               {error}
               <Button type="link" size="small" onClick={refetch}>
                 重试
@@ -105,7 +105,7 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({
       {/* 商品信息 */}
       {(apiGroup?.good_id || displayProductData) && (
         <div className="mb-4">
-          <h3 className="mb-2 text-sm font-medium text-gray-500">商品信息</h3>
+          <h3 className="mb-2 text-sm font-medium text-orange-500">商品信息</h3>
           <ProductDetailDisplay
             productData={displayProductData}
             loading={loadingProduct}
@@ -125,7 +125,7 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({
       )}
 
       {/* 订单信息 */}
-      {displayOrderData && (
+      {/* {displayOrderData && (
         <div className="mb-4">
           <OrderDetailDisplay
             orderData={displayOrderData}
@@ -133,7 +133,7 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({
             showDetailedInfo={false}
           />
         </div>
-      )}
+      )} */}
     </div>
   );
 };
