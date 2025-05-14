@@ -269,12 +269,12 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
               </div>
             </div>
             <div className="mt-3 text-right">
-              <CardButton
+              {/* <CardButton
                 text="查看详情"
                 url={data.url}
                 variant="secondary"
                 className="px-3 py-1.5 text-xs"
-              />
+              /> */}
             </div>
           </CardContainer>
         );
@@ -308,11 +308,11 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
               </div>
             </div>
             <div className="flex justify-end mt-4">
-              <CardButton
+              {/* <CardButton
                 text={data.button.text}
                 url={data.button.url}
                 variant="primary"
-              />
+              /> */}
             </div>
           </CardContainer>
         );
@@ -326,11 +326,11 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
               <h3 className="flex-1 mr-4 text-base font-semibold leading-relaxed text-slate-800">
                 {data.title}
               </h3>
-              <CardButton
+              {/* <CardButton
                 text={data.button.text}
                 url={data.button.url}
                 variant="primary"
-              />
+              /> */}
             </div>
           </CardContainer>
         );
@@ -349,13 +349,13 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
             <p className="mb-4 text-sm leading-relaxed text-slate-600">
               {data.content}
             </p>
-            <div className="flex justify-end">
+            {/* <div className="flex justify-end">
               <CardButton
                 text={data.button.text}
                 url={data.button.url}
                 variant="primary"
               />
-            </div>
+            </div> */}
           </CardContainer>
         );
       }
@@ -381,7 +381,7 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
                 </li>
               ))}
             </ul>
-            <div className="flex justify-end space-x-2">
+            {/* <div className="flex justify-end space-x-2">
               {data.buttonList.map((btn, index) => (
                 <CardButton
                   key={index}
@@ -397,7 +397,7 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
                   className="px-3 py-1.5 text-xs"
                 />
               ))}
-            </div>
+            </div> */}
           </CardContainer>
         );
       }
@@ -419,12 +419,12 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
             </p>
             <div className="flex items-center justify-between">
               <Price price={data.price} />
-              <CardButton
+              {/* <CardButton
                 text="查看订单"
                 url={data.url}
                 variant="secondary"
                 className="px-3 py-1.5 text-xs"
-              />
+              /> */}
             </div>
           </CardContainer>
         );
@@ -472,14 +472,14 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
                 </div>
               ))}
             </div>
-            <div className="flex justify-center mt-4">
+            {/* <div className="flex justify-center mt-4">
               <CardButton
                 text={data.button.text}
                 url={data.button.url}
                 variant="primary"
                 className="w-full"
               />
-            </div>
+            </div> */}
           </CardContainer>
         );
       }
