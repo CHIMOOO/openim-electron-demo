@@ -23,6 +23,7 @@ export interface IMessageItemProps {
 const components: Record<number, FC<IMessageItemProps>> = {
   [MessageType.TextMessage]: TextMessageRender,
   [MessageType.PictureMessage]: MediaMessageRender,
+  110: () => <div>test</div>,
 };
 
 const MessageItem: FC<IMessageItemProps> = ({
@@ -33,6 +34,7 @@ const MessageItem: FC<IMessageItemProps> = ({
 }) => {
   const messageWrapRef = useRef<HTMLDivElement>(null);
   const [showMessageMenu, setShowMessageMenu] = useState(false);
+  // debugger;
   const MessageRenderComponent = components[message.contentType] || CatchMessageRender;
 
   const closeMessageMenu = useCallback(() => {

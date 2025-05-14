@@ -1,7 +1,12 @@
-import { CopyOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  CopyOutlined,
+  UserOutlined,
+  DownOutlined,
+  UpOutlined,
+} from "@ant-design/icons";
 import { AllowType } from "@openim/wasm-client-sdk";
 import { Avatar, Button, Divider, Skeleton, Tooltip } from "antd";
-import { FC, memo } from "react";
+import { FC, memo, useState } from "react";
 
 import OIMAvatar from "@/components/OIMAvatar";
 import { useCurrentMemberRole } from "@/hooks/useCurrentMemberRole";
@@ -23,6 +28,7 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({
   orderData,
   productData: externalProductData,
 }) => {
+  const [showDetailedInfo, setShowDetailedInfo] = useState(false);
   const currentGroupInfo = useConversationStore((state) => state.currentGroupInfo);
   const { groupApiInfo, loading, error, refetch } = useGroupInfoApi();
   const {
@@ -45,7 +51,7 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({
   const apiGroup = groupApiInfo?.imGroup;
 
   return (
-    <div className="flex flex-col h-full p-4 overflow-y-auto bg-white border-l border-gray-200">
+    <div className="flex h-full flex-col overflow-y-auto border-l border-gray-200 bg-white p-4">
       {/* 群聊成员信息 - 模拟图片 */}
       <div className="mb-4">
         <h3 className="mb-2 text-sm font-medium text-orange-500">群聊成员</h3>
@@ -89,7 +95,7 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({
             />
           )}
           {error && (
-            <div className="p-2 mt-2 text-xs text-red-600 rounded-md bg-red-50">
+            <div className="mt-2 rounded-md bg-red-50 p-2 text-xs text-red-600">
               {error}
               <Button type="link" size="small" onClick={refetch}>
                 重试
@@ -130,8 +136,20 @@ const GroupInfoCard: FC<GroupInfoCardProps> = ({
           <OrderDetailDisplay
             orderData={displayOrderData}
             loading={loadingOrder}
-            showDetailedInfo={false}
+            showDetailedInfo={showDetailedInfo}
           />
+
+          {/* 展开/收起详情按钮 */}
+          <div className="mt-2 text-center">
+            <Button
+              type="link"
+              size="small"
+              onClick={() => setShowDetailedInfo(!showDetailedInfo)}
+              icon={showDetailedInfo ? <UpOutlined /> : <DownOutlined />}
+            >
+              {showDetailedInfo ? "收起详情" : "展开更多"}
+            </Button>
+          </div>
         </div>
       )}
     </div>

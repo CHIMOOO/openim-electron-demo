@@ -1,10 +1,11 @@
-import { Tag, Skeleton, Badge, Steps, Button } from "antd";
+import { Tag, Skeleton, Badge, Steps, Button, Tooltip } from "antd";
 import {
   ShoppingCartOutlined,
   DollarOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
   CloseCircleOutlined,
+  CopyOutlined,
 } from "@ant-design/icons";
 import { FC, memo } from "react";
 
@@ -38,6 +39,16 @@ const getOrderStatusConfig = (status: number) => {
       icon: <ClockCircleOutlined />,
     }
   );
+};
+
+// 支付类型映射
+const getPaymentTypeText = (type: number): string => {
+  const paymentTypeMap: Record<number, string> = {
+    0: "余额支付",
+    1: "支付宝",
+    2: "微信支付",
+  };
+  return paymentTypeMap[type] || "未知支付方式";
 };
 
 const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
@@ -84,6 +95,10 @@ const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
     };
   }
 
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+  };
+
   return (
     <div className="space-y-3">
       {/* 订单状态 */}
@@ -103,13 +118,44 @@ const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
 
       {isDetailedOrder ? (
         <div className="space-y-3">
+          {/* 商品标题信息 */}
+          <div className="p-3 rounded-md bg-gray-50">
+            <div className="mb-2 text-sm font-medium text-gray-900 truncate">
+              {(orderData as OrderDetail).goods_title}
+            </div>
+            <div className="flex flex-col justify-between text-xs text-gray-600">
+              <span>商品编号:</span>
+              <Tooltip title="点击复制">
+                <span
+                  className="flex items-center cursor-pointer hover:text-blue-500"
+                  onClick={() => handleCopy((orderData as OrderDetail).goods_no)}
+                >
+                  {(orderData as OrderDetail).goods_no}
+                  <CopyOutlined className="ml-1" />
+                </span>
+              </Tooltip>
+            </div>
+          </div>
+
           {/* 订单基本信息 */}
           <div className="p-3 rounded-md bg-gray-50">
             <div className="grid grid-cols-1 gap-2 text-xs text-gray-700">
-              <div className="flex flex-wrap justify-between">
+              <div className="flex flex-wrap items-center justify-between">
                 <span className="whitespace-nowrap">订单编号:</span>
-                <span className="font-medium">
-                  {(orderData as OrderDetail).order_no}
+                <Tooltip title="点击复制">
+                  <span
+                    className="flex items-center font-medium cursor-pointer hover:text-blue-500"
+                    onClick={() => handleCopy((orderData as OrderDetail).order_no)}
+                  >
+                    {(orderData as OrderDetail).order_no}
+                    <CopyOutlined className="ml-1" />
+                  </span>
+                </Tooltip>
+              </div>
+              <div className="flex justify-between">
+                <span>支付方式:</span>
+                <span>
+                  {getPaymentTypeText((orderData as OrderDetail).payment_type)}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -147,16 +193,30 @@ const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
                 <span>{(orderData as OrderDetail).device_name}</span>
               </div>
               <div className="flex justify-between">
-                <span>操作系统:</span>
+                <span>账号类型:</span>
                 <span>{(orderData as OrderDetail).operator_name}</span>
               </div>
+              {(orderData as OrderDetail).game_service_name && (
+                <div className="flex justify-between">
+                  <span>游戏服务器:</span>
+                  <span>{(orderData as OrderDetail).game_service_name}</span>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* 订单时间信息 - 只在详细信息模式下显示 */}
-          {showDetailedInfo && (
-            <div className="mt-3 space-y-2">
-              <h4 className="text-sm font-medium">订单时间线</h4>
+          {/* 订单时间信息 */}
+          <div className="mt-2 space-y-2">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-medium">订单时间</h4>
+              {!showDetailedInfo && (orderData as OrderDetail).place_time && (
+                <span className="text-xs text-gray-500">
+                  下单: {(orderData as OrderDetail).place_time}
+                </span>
+              )}
+            </div>
+
+            {showDetailedInfo && (
               <div className="p-3 rounded-md bg-gray-50">
                 {/* 显示订单的关键时间节点 */}
                 <div className="space-y-2 text-xs">
@@ -170,6 +230,18 @@ const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
                     <div className="flex justify-between">
                       <span>支付时间:</span>
                       <span>{(orderData as OrderDetail).pay_time}</span>
+                    </div>
+                  )}
+                  {(orderData as OrderDetail).verify_time && (
+                    <div className="flex justify-between">
+                      <span>验货时间:</span>
+                      <span>{(orderData as OrderDetail).verify_time}</span>
+                    </div>
+                  )}
+                  {(orderData as OrderDetail).send_time && (
+                    <div className="flex justify-between">
+                      <span>发货时间:</span>
+                      <span>{(orderData as OrderDetail).send_time}</span>
                     </div>
                   )}
                   {(orderData as OrderDetail).deal_time && (
@@ -196,10 +268,23 @@ const OrderDetailDisplay: FC<OrderDetailDisplayProps> = ({
                       <span>{(orderData as OrderDetail).refund_time}</span>
                     </div>
                   )}
+                  {(orderData as OrderDetail).system_refund_time && (
+                    <div className="flex justify-between">
+                      <span>系统退款时间:</span>
+                      <span>{(orderData as OrderDetail).system_refund_time}</span>
+                    </div>
+                  )}
+                  {(orderData as OrderDetail).refund_content &&
+                    (orderData as OrderDetail).refund_content !== "0" && (
+                      <div className="flex justify-between">
+                        <span>退款原因:</span>
+                        <span>{(orderData as OrderDetail).refund_content}</span>
+                      </div>
+                    )}
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* 订单流程 */}
           {/* <div className="mt-3">

@@ -581,7 +581,7 @@ export const useGetOrderList = () => {
 // 获取订单详情
 export const useGetOrderDetails = () => {
   return useMutation((params: API.Game.OrderDetailsParams) =>
-    gameRequest.post("/api/order/order_details", params, {
+    gameRequest.post("/api/order/cs_order_details", params, {
       headers: {
         operationID: uuidv4(),
       },

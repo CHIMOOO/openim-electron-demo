@@ -44,7 +44,7 @@ export const QueryChat = () => {
 
   return (
     <Layout id="chat-container" className="relative flex flex-row overflow-hidden">
-      <div className="flex h-full flex-1 shrink-0 flex-col">
+      <div className="flex flex-col flex-1 h-full shrink-0">
         <ChatHeader />
         <PanelGroup direction="vertical">
           <Panel id="chat-main" order={0}>
@@ -63,7 +63,7 @@ export const QueryChat = () => {
         </PanelGroup>
       </div>
       {isGroupSession && (
-        <div className="flex h-full w-[280px] flex-shrink-0 flex-col">
+        <div className="flex h-full w-[320px] flex-shrink-0 flex-col">
           <GroupInfoCard onViewDetails={openGroupSettings} orderData={orderData} />
         </div>
       )}
