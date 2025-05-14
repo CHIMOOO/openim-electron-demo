@@ -122,13 +122,21 @@ type IntelligentCard =
   | IntelligentCardType8
   | IntelligentCardType9;
 
+// 卡片基础容器组件
+const CardContainer: FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="p-4 transition-shadow duration-200 bg-white border rounded-xl border-slate-200">
+    {children}
+  </div>
+);
+
 // 通用按钮组件
 const CardButton: FC<{
   text: string;
-  color?: string;
+  color?: string; // 将主要通过预设样式控制，color属性可用于特殊覆盖
   url: string | { platform: number; pageName: string; paramId: number };
   className?: string;
-}> = ({ text, color, url, className }) => {
+  variant?: "primary" | "secondary" | "danger";
+}> = ({ text, color, url, className, variant = "primary" }) => {
   const handleClick = () => {
     if (typeof url === "string") {
       window.open(url, "_blank");
@@ -138,18 +146,29 @@ const CardButton: FC<{
     }
   };
 
+  let buttonStyle = "";
+  switch (variant) {
+    case "secondary":
+      buttonStyle = "bg-slate-100 hover:bg-slate-200 text-slate-700";
+      break;
+    case "danger":
+      buttonStyle = "bg-rose-500 hover:bg-rose-600 text-white";
+      break;
+    case "primary":
+    default:
+      buttonStyle = "bg-indigo-500 hover:bg-indigo-600 text-white";
+      break;
+  }
+
   return (
     <button
       onClick={handleClick}
       className={clsx(
-        "rounded-lg px-4 py-2 text-sm font-medium transition-all hover:opacity-90",
+        "rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2",
+        buttonStyle,
         className,
       )}
-      style={{
-        backgroundColor: color || "#EACA92",
-        color: color ? (color === "#EACA92" ? "#333" : "#fff") : "#333",
-        boxShadow: "0 2px 4px rgba(0,0,0,0.08)",
-      }}
+      style={color ? { backgroundColor: color } : {}}
     >
       {text}
     </button>
@@ -158,42 +177,39 @@ const CardButton: FC<{
 
 // 标签组件
 const Label: FC<{ text: string }> = ({ text }) => (
-  <span className="inline-block px-2 py-1 mr-2 text-xs border rounded-md border-amber-100 bg-amber-50 text-amber-800">
+  <span className="mr-2 inline-block rounded-full bg-sky-100 px-2.5 py-1 text-xs font-medium text-sky-700">
     {text}
   </span>
 );
 
 // 价格组件
 const Price: FC<{ price: string }> = ({ price }) => (
-  <div className="text-base font-medium text-red-500">¥{price}</div>
+  <div className="text-lg font-semibold text-slate-800">¥{price}</div>
 );
 
 // 状态显示组件
-const StatusTag: FC<{ text: string; color: string }> = ({ text, color }) => (
+const StatusTag: FC<{ text: string; color: string; bgColor?: string }> = ({
+  text,
+  color,
+  bgColor,
+}) => (
   <span
-    className="rounded-md px-2 py-0.5 text-xs font-medium"
-    style={{ backgroundColor: `${color}20`, color }}
+    className="rounded-full px-2.5 py-1 text-xs font-semibold tracking-wide"
+    style={{
+      backgroundColor: bgColor || `${color}1A`, // 更淡的背景，例如 #FF00001A
+      color: color,
+    }}
   >
     {text}
   </span>
 );
 
-// 卡片基础容器组件
-const CardContainer: FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="p-4 transition-shadow duration-200 bg-white border border-gray-100 shadow-sm rounded-xl hover:shadow-md">
-    {children}
-  </div>
-);
-
 const CardMessageRender: FC<IMessageItemProps> = (props) => {
   const { message, isSender } = props;
 
-  // 解析消息内容
   const cardData = useMemo<IntelligentCard | null>(() => {
     try {
-      // 假设message.content存储了卡片的JSON数据
       let content: any = JSON.parse(message.customElem?.data || "") || "";
-
       return content;
     } catch (error) {
       console.error("解析卡片数据失败:", error);
@@ -210,7 +226,8 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         )}
       >
         <CardContainer>
-          <h3 className="font-medium text-gray-800">无效的卡片消息</h3>
+          <h3 className="font-semibold text-slate-800">无效的卡片消息</h3>
+          <p className="mt-1 text-sm text-slate-500">无法解析卡片内容。</p>
         </CardContainer>
       </div>
     );
@@ -225,8 +242,10 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         const data = cardData as IntelligentCardType1;
         return (
           <CardContainer>
-            <h3 className="text-base font-medium text-gray-800">{data.title}</h3>
-            <p className="mt-3 text-sm leading-relaxed text-gray-600">{data.content}</p>
+            <h3 className="mb-2 text-base font-semibold text-slate-800">
+              {data.title}
+            </h3>
+            <p className="text-sm leading-relaxed text-slate-600">{data.content}</p>
           </CardContainer>
         );
       }
@@ -235,21 +254,27 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         const data = cardData as IntelligentCardType2;
         return (
           <CardContainer>
-            <h3 className="pb-2 mb-3 font-medium text-gray-800 border-b border-gray-100">
-              {data.title}
-            </h3>
-            <div className="flex items-center">
+            <h4 className="mb-2 text-sm font-medium text-slate-500">{data.title}</h4>
+            <div className="flex items-center space-x-3">
               <img
                 src={data.icon}
                 alt="商品图片"
-                className="object-cover w-16 h-16 mr-3 border border-gray-100 rounded-lg"
+                className="object-cover w-16 h-16 border rounded-lg border-slate-200"
               />
               <div className="flex-1">
-                <p className="mb-1 text-sm text-gray-700 line-clamp-2">
+                <p className="mb-1 text-sm font-medium line-clamp-2 text-slate-700">
                   {data.content}
                 </p>
                 <Price price={data.price} />
               </div>
+            </div>
+            <div className="mt-3 text-right">
+              <CardButton
+                text="查看详情"
+                url={data.url}
+                variant="secondary"
+                className="px-3 py-1.5 text-xs"
+              />
             </div>
           </CardContainer>
         );
@@ -259,29 +284,35 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         const data = cardData as IntelligentCardType3;
         return (
           <CardContainer>
-            <h3 className="mb-1 font-medium text-gray-800">{data.title}</h3>
-            <div className="flex justify-between pb-2 mt-1 mb-3 text-xs text-gray-500 border-b border-gray-100">
-              <span>{data.secondTitle.time}</span>
+            <div className="flex items-start justify-between mb-2">
+              <h3 className="text-base font-semibold text-slate-800">{data.title}</h3>
               <StatusTag
                 text={data.secondTitle.state}
                 color={data.secondTitle.state_type_color}
               />
             </div>
-            <div className="flex items-center">
+            <p className="mb-3 text-xs text-slate-500">
+              订单时间: {data.secondTitle.time}
+            </p>
+            <div className="flex items-center mb-3 space-x-3">
               <img
                 src={data.icon}
                 alt="商品图片"
-                className="object-cover w-16 h-16 mr-3 border border-gray-100 rounded-lg"
+                className="object-cover w-16 h-16 border rounded-lg border-slate-200"
               />
               <div className="flex-1">
-                <p className="mb-1 text-sm text-gray-700 line-clamp-2">
+                <p className="mb-1 text-sm line-clamp-2 text-slate-700">
                   {data.content}
                 </p>
                 <Price price={data.price} />
               </div>
             </div>
-            <div className="flex justify-end mt-3">
-              <CardButton text={data.button.text} url={data.button.url} />
+            <div className="flex justify-end mt-4">
+              <CardButton
+                text={data.button.text}
+                url={data.button.url}
+                variant="primary"
+              />
             </div>
           </CardContainer>
         );
@@ -291,11 +322,15 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         const data = cardData as IntelligentCardType4;
         return (
           <CardContainer>
-            <h3 className="mb-3 font-medium leading-relaxed text-gray-800">
-              {data.title}
-            </h3>
-            <div className="flex justify-end">
-              <CardButton text={data.button.text} url={data.button.url} />
+            <div className="flex items-center justify-between">
+              <h3 className="flex-1 mr-4 text-base font-semibold leading-relaxed text-slate-800">
+                {data.title}
+              </h3>
+              <CardButton
+                text={data.button.text}
+                url={data.button.url}
+                variant="primary"
+              />
             </div>
           </CardContainer>
         );
@@ -306,16 +341,20 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         return (
           <CardContainer>
             <h3
-              className="mb-2 text-lg font-medium"
+              className="mb-2 text-lg font-semibold"
               style={{ color: data.title.color }}
             >
               {data.title.text}
             </h3>
-            <p className="mt-2 mb-3 text-sm leading-relaxed text-gray-600">
+            <p className="mb-4 text-sm leading-relaxed text-slate-600">
               {data.content}
             </p>
-            <div className="flex justify-end mt-3">
-              <CardButton text={data.button.text} url={data.button.url} />
+            <div className="flex justify-end">
+              <CardButton
+                text={data.button.text}
+                url={data.button.url}
+                variant="primary"
+              />
             </div>
           </CardContainer>
         );
@@ -325,22 +364,37 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         const data = cardData as IntelligentCardType6;
         return (
           <CardContainer>
-            <h3 className="mb-3 font-medium text-gray-800">{data.title}</h3>
-            <ul className="pl-5 mt-2 mb-4 space-y-2 text-sm text-gray-600 list-disc">
+            <h3 className="mb-3 text-base font-semibold text-slate-800">
+              {data.title}
+            </h3>
+            <ul className="mb-4 space-y-1.5 pl-1 text-sm text-slate-600">
               {data.contentList.map((item, index) => (
-                <li key={index} className="leading-relaxed">
-                  {item}
+                <li key={index} className="flex items-center">
+                  <svg
+                    className="flex-shrink-0 w-3 h-3 mr-2 text-emerald-500"
+                    fill="currentColor"
+                    viewBox="0 0 12 12"
+                  >
+                    <path d="M10.28 2.28L3.989 8.575 1.72 6.28A1 1 0 00.288 7.72l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                  </svg>
+                  <span>{item}</span>
                 </li>
               ))}
             </ul>
-            <div className="flex justify-between mt-3">
+            <div className="flex justify-end space-x-2">
               {data.buttonList.map((btn, index) => (
                 <CardButton
                   key={index}
                   text={btn.text}
-                  color={btn.color}
                   url={btn.url}
-                  className={index === 0 ? "mr-2" : ""}
+                  variant={
+                    btn.color === "#ff0000" || btn.color?.toLowerCase() === "red"
+                      ? "danger"
+                      : index === data.buttonList.length - 1
+                      ? "primary"
+                      : "secondary"
+                  }
+                  className="px-3 py-1.5 text-xs"
                 />
               ))}
             </div>
@@ -352,16 +406,26 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         const data = cardData as IntelligentCardType7;
         return (
           <CardContainer>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-wrap gap-1">
                 {data.labelList.map((label, index) => (
                   <Label key={index} text={label} />
                 ))}
               </div>
               <StatusTag text={data.state.text} color={data.state.color} />
             </div>
-            <p className="mb-2 text-sm text-gray-700 line-clamp-2">{data.content}</p>
-            <Price price={data.price} />
+            <p className="mb-2 text-sm font-medium line-clamp-2 text-slate-700">
+              {data.content}
+            </p>
+            <div className="flex items-center justify-between">
+              <Price price={data.price} />
+              <CardButton
+                text="查看订单"
+                url={data.url}
+                variant="secondary"
+                className="px-3 py-1.5 text-xs"
+              />
+            </div>
           </CardContainer>
         );
       }
@@ -370,14 +434,18 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         const data = cardData as IntelligentCardType8;
         return (
           <CardContainer>
-            <h3 className="pb-2 mb-3 font-medium text-gray-800 border-b border-gray-100">
+            <h3 className="pb-2 mb-3 text-base font-semibold border-b border-slate-100 text-slate-800">
               {data.title}
             </h3>
-            <div className="grid grid-cols-2 text-sm gap-x-4 gap-y-2">
+            <div className="space-y-1.5 text-sm">
               {data.contentJson.map((item, index) => (
-                <div key={index} className="flex">
-                  <span className="mr-2 min-w-[4.5rem] text-gray-500">{item.key}:</span>
-                  <span className="text-gray-800">{item.value}</span>
+                <div key={index} className="flex items-start">
+                  <span className="flex-shrink-0 w-1/3 pr-1 mr-2 text-slate-500">
+                    {item.key}:
+                  </span>
+                  <span className="flex-1 min-w-0 font-medium break-words text-slate-700">
+                    {item.value}
+                  </span>
                 </div>
               ))}
             </div>
@@ -389,22 +457,26 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         const data = cardData as IntelligentCardType9;
         return (
           <CardContainer>
-            <h3 className="pb-2 mb-3 font-medium text-gray-800 border-b border-gray-100">
+            <h3 className="pb-2 mb-3 text-base font-semibold border-b border-slate-100 text-slate-800">
               {data.title}
             </h3>
-            <div className="grid grid-cols-2 mb-4 text-sm gap-x-4 gap-y-2">
+            <div className="mb-4 space-y-1.5 text-sm">
               {data.contentJson.map((item, index) => (
-                <div key={index} className="flex">
-                  <span className="mr-2 min-w-[4.5rem] text-gray-500">{item.key}:</span>
-                  <span className="font-medium text-gray-800">{item.value}</span>
+                <div key={index} className="flex items-start">
+                  <span className="flex-shrink-0 w-1/3 pr-1 mr-2 text-slate-500">
+                    {item.key}:
+                  </span>
+                  <span className="flex-1 min-w-0 font-medium break-words text-slate-700">
+                    {item.value}
+                  </span>
                 </div>
               ))}
             </div>
-            <div className="flex justify-center mt-3">
+            <div className="flex justify-center mt-4">
               <CardButton
                 text={data.button.text}
                 url={data.button.url}
-                color="#EACA92"
+                variant="primary"
                 className="w-full"
               />
             </div>
@@ -413,10 +485,13 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
       }
 
       default:
+        const unknownData = cardData as IntelligentCardBase;
         return (
           <CardContainer>
-            <h3 className="font-medium text-gray-800">未知卡片类型</h3>
-            <p className="mt-2 text-gray-600">类型: {type}</p>
+            <h3 className="font-semibold text-slate-800">未知卡片类型</h3>
+            <p className="mt-1 text-sm text-slate-500">
+              类型代码: {unknownData.intelligentType}
+            </p>
           </CardContainer>
         );
     }
