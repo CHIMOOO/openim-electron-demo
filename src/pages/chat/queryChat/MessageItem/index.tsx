@@ -37,7 +37,9 @@ const MessageItem: FC<IMessageItemProps> = ({
   const [showMessageMenu, setShowMessageMenu] = useState(false);
   // debugger;
   const MessageRenderComponent = components[message.contentType] || CatchMessageRender;
-
+  // if (!components[message.contentType]) {
+  //   debugger;
+  // }
   const closeMessageMenu = useCallback(() => {
     setShowMessageMenu(false);
   }, []);
