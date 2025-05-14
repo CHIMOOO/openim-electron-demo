@@ -1,9 +1,16 @@
 import { useLatest } from "ahooks";
 import { Button } from "antd";
 import { t } from "i18next";
-import { forwardRef, ForwardRefRenderFunction, memo, useRef, useState } from "react";
+import {
+  forwardRef,
+  ForwardRefRenderFunction,
+  memo,
+  useRef,
+  useState,
+  useEffect,
+} from "react";
 
-import CKEditor from "@/components/CKEditor";
+import CKEditor, { CKEditorRef } from "@/components/CKEditor";
 import { getCleanText } from "@/components/CKEditor/utils";
 import QuickPhrases from "@/components/QuickPhrases";
 import { useQuickPhrases } from "@/hooks/useQuickPhrases";
@@ -29,6 +36,7 @@ const ChatFooter: ForwardRefRenderFunction<unknown, unknown> = (_, ref) => {
   const [html, setHtml] = useState("");
   const latestHtml = useLatest(html);
   const editorWrapperRef = useRef<HTMLDivElement>(null);
+  const ckEditorRef = useRef<CKEditorRef>(null);
   const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
 
   const { getImageMessage } = useFileMessage();
@@ -71,6 +79,13 @@ const ChatFooter: ForwardRefRenderFunction<unknown, unknown> = (_, ref) => {
       return prevHtml + content;
     });
   };
+
+  useEffect(() => {
+    if (html) {
+      // 确保 html 已经更新 (setHtml 是异步的)
+      ckEditorRef.current?.focus(true); // true 表示移动光标到末尾
+    }
+  }, [html]);
 
   const handleSlashInput = (position: { top: number; left: number }) => {
     // 获取编辑器容器的位置信息
@@ -118,6 +133,7 @@ const ChatFooter: ForwardRefRenderFunction<unknown, unknown> = (_, ref) => {
           ref={editorWrapperRef}
         >
           <CKEditor
+            ref={ckEditorRef}
             value={html}
             onEnter={enterToSend}
             onChange={onChange}

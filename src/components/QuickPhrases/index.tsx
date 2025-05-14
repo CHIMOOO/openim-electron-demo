@@ -93,7 +93,7 @@ const QuickPhrases = ({
       trigger={[]}
       overlayClassName="quick-phrases-dropdown "
       dropdownRender={(menu) => (
-        <div className="rounded bg-white shadow-lg" ref={dropdownRef}>
+        <div className="bg-white rounded shadow-lg" ref={dropdownRef}>
           {loading ? (
             <div className="flex items-center justify-center p-4">
               <Spin size="small" />
@@ -106,7 +106,7 @@ const QuickPhrases = ({
         </div>
       )}
     >
-      <div className="h-0 w-0" />
+      <div className="w-0 h-0" />
     </Dropdown>
   );
 };
