@@ -41,7 +41,35 @@ const ChatFooter: ForwardRefRenderFunction<unknown, unknown> = (_, ref) => {
   };
 
   const handleQuickPhraseSelect = (content: string) => {
-    setHtml(html + content);
+    setHtml((prevHtml) => {
+      const trimmedHtml = prevHtml.trim();
+
+      // Case 1: CKEditor wraps a lone slash as "<p>/</p>"
+      if (trimmedHtml === "<p>/</p>") {
+        return `<p>${content}</p>`;
+      }
+
+      // Case 2: CKEditor has content like "<p>some text /</p>" or "<p>some text/</p>"
+      // Replace the slash that's immediately before the closing </p> tag.
+      const slashAtEndOfPTagRegex = /\/(<\/p>\s*)$/;
+      if (slashAtEndOfPTagRegex.test(trimmedHtml)) {
+        return trimmedHtml.replace(slashAtEndOfPTagRegex, `${content}$1`);
+      }
+
+      // Case 3: Handle plain text ending with "/" (less likely with CKEditor but for robustness)
+      // Use original prevHtml here.
+      if (prevHtml.endsWith("/")) {
+        return prevHtml.slice(0, -1) + content;
+      }
+
+      // Fallback: If no specific slash pattern is matched, append the content.
+      // This might occur if the slash is part of a more complex HTML structure.
+      console.log(
+        "QuickPhrases: Unhandled HTML structure for slash replacement, appending content. HTML:",
+        prevHtml,
+      );
+      return prevHtml + content;
+    });
   };
 
   const handleSlashInput = (position: { top: number; left: number }) => {
@@ -82,11 +110,11 @@ const ChatFooter: ForwardRefRenderFunction<unknown, unknown> = (_, ref) => {
   };
 
   return (
-    <footer className="relative h-full bg-white py-px">
+    <footer className="relative h-full py-px bg-white">
       <div className="flex h-full flex-col border-t border-t-[var(--gap-text)]">
         <SendActionBar sendMessage={sendMessage} getImageMessage={getImageMessage} />
         <div
-          className="relative flex flex-1 flex-col overflow-hidden"
+          className="relative flex flex-col flex-1 overflow-hidden"
           ref={editorWrapperRef}
         >
           <CKEditor
@@ -111,7 +139,7 @@ const ChatFooter: ForwardRefRenderFunction<unknown, unknown> = (_, ref) => {
             />
           </div>
           <div className="flex items-center justify-end py-2 pr-3">
-            <Button className="w-fit px-6 py-1" type="primary" onClick={enterToSend}>
+            <Button className="px-6 py-1 w-fit" type="primary" onClick={enterToSend}>
               {t("placeholder.send")}
             </Button>
           </div>
