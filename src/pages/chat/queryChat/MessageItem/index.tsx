@@ -6,6 +6,7 @@ import OIMAvatar from "@/components/OIMAvatar";
 import { formatMessageTime } from "@/utils/imCommon";
 
 import CatchMessageRender from "./CatchMsgRenderer";
+import CardMessageRender from "./CardMessageRender";
 import MediaMessageRender from "./MediaMessageRender";
 import styles from "./message-item.module.scss";
 import MessageItemErrorBoundary from "./MessageItemErrorBoundary";
@@ -23,7 +24,7 @@ export interface IMessageItemProps {
 const components: Record<number, FC<IMessageItemProps>> = {
   [MessageType.TextMessage]: TextMessageRender,
   [MessageType.PictureMessage]: MediaMessageRender,
-  110: () => <div>test</div>,
+  110: CardMessageRender,
 };
 
 const MessageItem: FC<IMessageItemProps> = ({
