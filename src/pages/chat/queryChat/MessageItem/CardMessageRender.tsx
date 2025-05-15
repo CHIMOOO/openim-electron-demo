@@ -132,17 +132,17 @@ const CardContainer: FC<{
   const isDev = import.meta.env.MODE === "development";
 
   return (
-    <div className="p-4 transition-shadow duration-200 bg-white border rounded-xl border-slate-200">
+    <div className="rounded-xl border border-slate-200 bg-white p-4 transition-shadow duration-200">
       {children}
 
       {/* 开发环境下显示卡片数据 */}
       {isDev && cardData && (
-        <div className="pt-3 mt-3 border-t border-slate-100">
+        <div className="mt-3 border-t border-slate-100 pt-3">
           <details className="text-xs">
-            <summary className="font-mono cursor-pointer text-slate-500">
+            <summary className="cursor-pointer font-mono text-slate-500">
               Debug: 展开查看卡片数据
             </summary>
-            <pre className="p-2 mt-2 overflow-auto rounded max-h-60 bg-slate-50 text-slate-700">
+            <pre className="mt-2 max-h-60 overflow-auto rounded bg-slate-50 p-2 text-slate-700">
               {JSON.stringify(cardData, null, 2)}
             </pre>
           </details>
@@ -162,44 +162,65 @@ const CardButton: FC<{
   onClick?: (
     url: string | { platform: number; pageName: string; paramId: number },
   ) => void;
-}> = ({ text, color, url, className, variant = "primary", onClick }) => {
+}> = ({ text, url, className = "", variant = "primary", onClick }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState<string>("");
+  const [paramId, setParamId] = useState<number | undefined>(undefined);
+
   const handleClick = () => {
+    // 如果提供了外部的onClick处理函数，优先使用
     if (onClick) {
       onClick(url);
-    } else if (typeof url === "string") {
+      return;
+    }
+
+    // 默认处理逻辑
+    if (typeof url === "string") {
+      // 处理URL链接
       window.open(url, "_blank");
     } else {
-      console.log("跳转到应用内页面:", url);
-      // 在这里实现内部导航逻辑
+      // 处理内部页面跳转或弹窗
+      const { pageName, paramId: id } = url;
+
+      // 处理不同类型的弹窗
+      if (pageName) {
+        setModalType(pageName);
+        setParamId(id);
+        setModalVisible(true);
+      }
     }
   };
 
-  let buttonStyle = "";
-  switch (variant) {
-    case "secondary":
-      buttonStyle = "bg-slate-100 hover:bg-slate-200 text-slate-700";
-      break;
-    case "danger":
-      buttonStyle = "bg-rose-500 hover:bg-rose-600 text-white";
-      break;
-    case "primary":
-    default:
-      buttonStyle = "bg-indigo-500 hover:bg-indigo-600 text-white";
-      break;
-  }
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  // 根据不同的variant设置不同的样式
+  const buttonClassNames = clsx(
+    "w-full rounded-md px-4 py-2 text-center transition-colors duration-200",
+    {
+      "bg-blue-500 text-white hover:bg-blue-600": variant === "primary",
+      "bg-white text-blue-500 border border-blue-500 hover:bg-blue-50":
+        variant === "secondary",
+      "bg-red-500 text-white hover:bg-red-600": variant === "danger",
+    },
+    className,
+  );
 
   return (
-    <button
-      onClick={handleClick}
-      className={clsx(
-        "rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2",
-        buttonStyle,
-        className,
-      )}
-      style={color ? { backgroundColor: color } : {}}
-    >
-      {text}
-    </button>
+    <>
+      <button onClick={handleClick} className={buttonClassNames}>
+        {text}
+      </button>
+
+      {/* 弹窗组件 */}
+      <CardActionModal
+        visible={modalVisible}
+        onClose={closeModal}
+        modalType={modalType}
+        paramId={paramId}
+      />
+    </>
   );
 };
 
@@ -302,10 +323,10 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
               <img
                 src={data.icon}
                 alt="商品图片"
-                className="object-cover w-16 h-16 border rounded-lg border-slate-200"
+                className="h-16 w-16 rounded-lg border border-slate-200 object-cover"
               />
               <div className="flex-1">
-                <p className="mb-1 text-sm font-medium line-clamp-2 text-slate-700">
+                <p className="mb-1 line-clamp-2 text-sm font-medium text-slate-700">
                   {data.content}
                 </p>
                 <Price price={data.price} />
@@ -327,7 +348,7 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         const data = cardData as IntelligentCardType3;
         return (
           <CardContainer cardData={data}>
-            <div className="flex items-start justify-between mb-2">
+            <div className="mb-2 flex items-start justify-between">
               <h3 className="text-base font-semibold text-slate-800">{data.title}</h3>
               <StatusTag
                 text={data.secondTitle.state}
@@ -337,20 +358,20 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
             <p className="mb-3 text-xs text-slate-500">
               订单时间: {data.secondTitle.time}
             </p>
-            <div className="flex items-center mb-3 space-x-3">
+            <div className="mb-3 flex items-center space-x-3">
               <img
                 src={data.icon}
                 alt="商品图片"
-                className="object-cover w-16 h-16 border rounded-lg border-slate-200"
+                className="h-16 w-16 rounded-lg border border-slate-200 object-cover"
               />
               <div className="flex-1">
-                <p className="mb-1 text-sm line-clamp-2 text-slate-700">
+                <p className="mb-1 line-clamp-2 text-sm text-slate-700">
                   {data.content}
                 </p>
                 <Price price={data.price} />
               </div>
             </div>
-            <div className="flex justify-end mt-4">
+            <div className="mt-4 flex justify-end">
               <CardButton
                 text={data.button.text}
                 url={data.button.url}
@@ -367,7 +388,7 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         return (
           <CardContainer cardData={data}>
             <div className="flex items-center justify-between">
-              <h3 className="flex-1 mr-4 text-base font-semibold leading-relaxed text-slate-800">
+              <h3 className="mr-4 flex-1 text-base font-semibold leading-relaxed text-slate-800">
                 {data.title}
               </h3>
               <p className="text-sm leading-relaxed text-slate-600">{data.content}</p>
@@ -418,7 +439,7 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
               {data.contentList.map((item, index) => (
                 <li key={index} className="flex items-center">
                   <svg
-                    className="flex-shrink-0 w-3 h-3 mr-2 text-emerald-500"
+                    className="mr-2 h-3 w-3 flex-shrink-0 text-emerald-500"
                     fill="currentColor"
                     viewBox="0 0 12 12"
                   >
@@ -454,7 +475,7 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         const data = cardData as IntelligentCardType7;
         return (
           <CardContainer cardData={data}>
-            <div className="flex items-center justify-between mb-2">
+            <div className="mb-2 flex items-center justify-between">
               <div className="flex flex-wrap gap-1">
                 {data.labelList.map((label, index) => (
                   <Label key={index} text={label} />
@@ -462,7 +483,7 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
               </div>
               <StatusTag text={data.state.text} color={data.state.color} />
             </div>
-            <p className="mb-2 text-sm font-medium line-clamp-2 text-slate-700">
+            <p className="mb-2 line-clamp-2 text-sm font-medium text-slate-700">
               {data.content}
             </p>
             <div className="flex items-center justify-between">
@@ -483,16 +504,16 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         const data = cardData as IntelligentCardType8;
         return (
           <CardContainer cardData={data}>
-            <h3 className="pb-2 mb-3 text-base font-semibold border-b border-slate-100 text-slate-800">
+            <h3 className="mb-3 border-b border-slate-100 pb-2 text-base font-semibold text-slate-800">
               {data.title}
             </h3>
             <div className="space-y-1.5 text-sm">
               {data.contentJson.map((item, index) => (
                 <div key={index} className="flex items-start">
-                  <span className="flex-shrink-0 w-1/3 pr-1 mr-2 text-slate-500">
+                  <span className="mr-2 w-1/3 flex-shrink-0 pr-1 text-slate-500">
                     {item.key}:
                   </span>
-                  <span className="flex-1 min-w-0 font-medium break-words text-slate-700">
+                  <span className="min-w-0 flex-1 break-words font-medium text-slate-700">
                     {item.value}
                   </span>
                 </div>
@@ -506,22 +527,22 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
         const data = cardData as IntelligentCardType9;
         return (
           <CardContainer cardData={data}>
-            <h3 className="pb-2 mb-3 text-base font-semibold border-b border-slate-100 text-slate-800">
+            <h3 className="mb-3 border-b border-slate-100 pb-2 text-base font-semibold text-slate-800">
               {data.title}
             </h3>
             <div className="mb-4 space-y-1.5 text-sm">
               {data.contentJson.map((item, index) => (
                 <div key={index} className="flex items-start">
-                  <span className="flex-shrink-0 w-1/3 pr-1 mr-2 text-slate-500">
+                  <span className="mr-2 w-1/3 flex-shrink-0 pr-1 text-slate-500">
                     {item.key}:
                   </span>
-                  <span className="flex-1 min-w-0 font-medium break-words text-slate-700">
+                  <span className="min-w-0 flex-1 break-words font-medium text-slate-700">
                     {item.value}
                   </span>
                 </div>
               ))}
             </div>
-            <div className="flex justify-center mt-4">
+            <div className="mt-4 flex justify-center">
               <CardButton
                 text={data.button.text}
                 url={data.button.url}

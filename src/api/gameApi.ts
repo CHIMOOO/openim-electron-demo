@@ -173,7 +173,7 @@ export const useEditGoods = () => {
 
 // 获取商品详情
 export const useGetGoodsDetails = () => {
-  return useMutation((params: API.Game.GoodsDetailsParams) =>
+  return useMutation((params: { goods_id: number | string }) =>
     gameRequest.post("/api/goods/goods_details", params, {
       headers: {
         operationID: uuidv4(),
@@ -558,7 +558,7 @@ export const useOrderPlay = () => {
 
 // 设置订单状态
 export const useSetOrderStatus = () => {
-  return useMutation((params: API.Game.SetOrderStatusParams) =>
+  return useMutation((params: { order_id: number | string; status: number }) =>
     gameRequest.post("/api/order/order_status_set", params, {
       headers: {
         operationID: uuidv4(),
@@ -580,8 +580,65 @@ export const useGetOrderList = () => {
 
 // 获取订单详情
 export const useGetOrderDetails = () => {
-  return useMutation((params: API.Game.OrderDetailsParams) =>
+  return useMutation((params: { order_id: number | string }) =>
     gameRequest.post("/api/order/cs_order_details", params, {
+      headers: {
+        operationID: uuidv4(),
+      },
+    }),
+  );
+};
+
+// 商品回收接口（录入信息）
+export const useGoodsRecycle = () => {
+  return useMutation((params: { 
+    game_id: number | string;
+    pattern_id: number;
+    account: string;
+    amount: number;
+    seller_id?: number;
+    buyer_id?: number;
+    send_im_id?: string;
+    im_group_id?: string;
+    platform?: number;
+  }) =>
+    gameRequest.post("/api/goods/goods_recycle", params, {
+      headers: {
+        operationID: uuidv4(),
+      },
+    }),
+  );
+};
+
+// 保存游戏账号
+export const useSaveGameAccountValue = () => {
+  return useMutation((params: { 
+    game_id: number | string;
+    goods_id: number | string;
+    order_id: number | string;
+    is_account_source: number;
+    authentication_image?: string;
+    account_source_image?: string;
+    send_im_id?: string;
+    im_group_id?: string;
+    platform?: number;
+    game_account_value: Array<{
+      id: number;
+      value: string;
+    }>;
+  }) =>
+    gameRequest.post("/api/game/save_game_account_value", params, {
+      headers: {
+        operationID: uuidv4(),
+      },
+    }),
+  );
+};
+
+// 获取游戏账号
+export const useGetGameAccountValue = () => {
+  return useMutation((params: { goods_id: number | string }) =>
+    gameRequest.post("/api/game/get_game_account_value", params, {
       headers: {
         operationID: uuidv4(),
       },
