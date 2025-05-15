@@ -94,6 +94,8 @@ const UserCardModal: ForwardRefRenderFunction<
       const {
         data: { users },
       } = await getBusinessUserInfo([userID!]);
+      localStorage.removeItem("token");
+      localStorage.removeItem("userType");
       userInfo = { ...userInfo, ...users[0] };
     } catch (error) {
       console.error("get business user info failed", userID, error);
@@ -233,7 +235,7 @@ const UserCardModal: ForwardRefRenderFunction<
         ) : (
           <div className="flex max-h-[520px] min-h-[484px] flex-col overflow-hidden bg-[url(@/assets/images/common/card_bg.png)] bg-[length:332px_134px] bg-no-repeat px-5.5">
             <div className="h-[104px] min-h-[104px] w-full cursor-move" />
-            <div className="ignore-drag flex flex-1 flex-col overflow-hidden">
+            <div className="flex flex-col flex-1 overflow-hidden ignore-drag">
               <div className="flex items-center">
                 <OIMAvatar
                   size={60}
@@ -243,7 +245,7 @@ const UserCardModal: ForwardRefRenderFunction<
                 <div className="ml-3 flex h-[60px] flex-1 flex-col justify-around overflow-hidden">
                   <div className="flex w-fit max-w-[80%] items-baseline">
                     <div
-                      className="flex-1 select-text truncate text-base font-medium text-white"
+                      className="flex-1 text-base font-medium text-white truncate select-text"
                       title={cardInfo?.nickname}
                     >
                       {cardInfo?.nickname}
@@ -271,7 +273,7 @@ const UserCardModal: ForwardRefRenderFunction<
                 />
               </div>
             </div>
-            <div className="mx-1 mb-6 mt-3 flex items-center gap-6">
+            <div className="flex items-center gap-6 mx-1 mt-3 mb-6">
               {showAddFriend && (
                 <Button type="primary" className="flex-1" onClick={trySendRequest}>
                   {t("placeholder.addFriends")}
@@ -347,7 +349,7 @@ const UserCardDataGroup: FC<IUserCardDataGroupProps> = ({
     <div>
       <div className="my-4 text-[var(--sub-text)]">{title}</div>
       {fieldRows.map((fieldRow, idx) => (
-        <div className="my-4 flex items-center text-xs" key={idx}>
+        <div className="flex items-center my-4 text-xs" key={idx}>
           <div className="w-24 text-[var(--sub-text)]">{fieldRow.title}</div>
           {fieldRow.editable ? (
             <EditableContent
@@ -358,7 +360,7 @@ const UserCardDataGroup: FC<IUserCardDataGroupProps> = ({
               onChange={tryUpdateRemark}
             />
           ) : (
-            <div className="flex-1 select-text truncate">{fieldRow.value}</div>
+            <div className="flex-1 truncate select-text">{fieldRow.value}</div>
           )}
         </div>
       ))}

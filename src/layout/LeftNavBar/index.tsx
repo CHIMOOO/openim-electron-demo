@@ -221,7 +221,13 @@ const LeftNavBar = memo(() => {
       feedbackToast({ error: t("toast.updateAvatarFailed") });
     }
   };
-
+  let userName = "";
+  const userType = localStorage.getItem("userType");
+  if (userType == "1") {
+    userName = "卖家";
+  } else {
+    userName = "客服";
+  }
   const ProfileContent = (
     <div className="w-72 px-2.5 pb-3 pt-5.5">
       <div className="mb-4.5 ml-3 flex items-center">
@@ -238,7 +244,7 @@ const LeftNavBar = memo(() => {
           </div>
         </Upload>
         <div className="flex-1 overflow-hidden">
-          <div className="mb-1 truncate text-base font-medium">{selfInfo.nickname}</div>
+          <div className="mb-1 text-base font-medium truncate">{selfInfo.nickname}</div>
         </div>
       </div>
       {profileMenuList.map((menu) => (
@@ -266,7 +272,7 @@ const LeftNavBar = memo(() => {
       width={60}
       theme="light"
     >
-      <div className="mt-6 flex flex-col items-center">
+      <div className="flex flex-col items-center mt-6">
         <Popover
           content={ProfileContent}
           trigger="click"
@@ -279,8 +285,8 @@ const LeftNavBar = memo(() => {
         >
           <OIMAvatar
             className="mb-6 cursor-pointer"
-            src={selfInfo.faceURL}
-            text={selfInfo.nickname}
+            src={null}
+            text={userName || selfInfo.nickname}
           />
         </Popover>
 

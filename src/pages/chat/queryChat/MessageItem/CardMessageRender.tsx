@@ -1,7 +1,8 @@
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
 import { IMessageItemProps } from "./index";
 import styles from "./message-item.module.scss";
 import clsx from "clsx";
+import { Modal, Form, Input, Button, message, Select } from "antd";
 
 // 智能卡片类型定义
 interface IntelligentCardBase {
@@ -136,9 +137,14 @@ const CardButton: FC<{
   url: string | { platform: number; pageName: string; paramId: number };
   className?: string;
   variant?: "primary" | "secondary" | "danger";
-}> = ({ text, color, url, className, variant = "primary" }) => {
+  onClick?: (
+    url: string | { platform: number; pageName: string; paramId: number },
+  ) => void;
+}> = ({ text, color, url, className, variant = "primary", onClick }) => {
   const handleClick = () => {
-    if (typeof url === "string") {
+    if (onClick) {
+      onClick(url);
+    } else if (typeof url === "string") {
       window.open(url, "_blank");
     } else {
       console.log("跳转到应用内页面:", url);
@@ -204,8 +210,292 @@ const StatusTag: FC<{ text: string; color: string; bgColor?: string }> = ({
   </span>
 );
 
+// 弹窗组件
+const AlertModal: FC<{
+  visible: boolean;
+  onClose: () => void;
+  modalType: string;
+  paramId?: number;
+}> = ({ visible, onClose, modalType, paramId }) => {
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      setLoading(true);
+
+      let apiUrl = "";
+      let apiData = { ...values };
+
+      switch (modalType) {
+        case "AlertEnterInformation":
+          apiUrl = "/api/goods/goods_recycle";
+          break;
+        case "AlertPayment":
+          apiUrl = "/api/order/order_play";
+          break;
+        case "AlertSubmitAccount":
+          apiUrl = "/api/game/save_game_account_value";
+          break;
+        case "AlertGetAccount":
+          apiUrl = "/api/game/get_game_account_value";
+          break;
+        case "AlertVerification":
+        case "AlertConfirmReceipt":
+          apiUrl = "/api/order/order_status_set";
+          break;
+        case "AlertProductDetails":
+          apiUrl = "/api/goods/goods_details";
+          apiData = { id: paramId };
+          break;
+        case "AlertOrderDetails":
+          apiUrl = "/api/order/cs_order_details";
+          apiData = { order_id: paramId };
+          break;
+        default:
+          break;
+      }
+
+      // 模拟API调用
+      console.log(`Calling API: ${apiUrl}`, apiData);
+      // 实际开发时替换为真正的API调用
+      // const response = await fetch(apiUrl, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': `Bearer ${localStorage.getItem('token')}`
+      //   },
+      //   body: JSON.stringify(apiData)
+      // });
+      // const result = await response.json();
+
+      setTimeout(() => {
+        setLoading(false);
+        message.success("操作成功");
+        onClose();
+        form.resetFields();
+      }, 1000);
+    } catch (error) {
+      console.error("提交表单出错:", error);
+      setLoading(false);
+    }
+  };
+
+  const renderModalContent = () => {
+    switch (modalType) {
+      case "AlertEnterInformation":
+        return (
+          <Form form={form} layout="vertical">
+            <Form.Item
+              name="title"
+              label="标题"
+              rules={[{ required: true, message: "请输入标题" }]}
+            >
+              <Input placeholder="请输入标题" />
+            </Form.Item>
+            <Form.Item
+              name="content"
+              label="内容"
+              rules={[{ required: true, message: "请输入内容" }]}
+            >
+              <Input.TextArea rows={4} placeholder="请输入内容" />
+            </Form.Item>
+          </Form>
+        );
+
+      case "AlertPayment":
+        return (
+          <Form form={form} layout="vertical">
+            <Form.Item
+              name="payment_method"
+              label="支付方式"
+              rules={[{ required: true, message: "请选择支付方式" }]}
+            >
+              <Select>
+                <Select.Option value="balance">余额支付</Select.Option>
+                <Select.Option value="alipay">支付宝</Select.Option>
+                <Select.Option value="wechat">微信支付</Select.Option>
+              </Select>
+            </Form.Item>
+            <div className="my-4 text-lg font-bold text-center">支付金额: ¥199.00</div>
+          </Form>
+        );
+
+      case "AlertSubmitAccount":
+        return (
+          <Form form={form} layout="vertical">
+            <Form.Item
+              name="account"
+              label="账号"
+              rules={[{ required: true, message: "请输入账号" }]}
+            >
+              <Input placeholder="请输入账号" />
+            </Form.Item>
+            <Form.Item
+              name="password"
+              label="密码"
+              rules={[{ required: true, message: "请输入密码" }]}
+            >
+              <Input.Password placeholder="请输入密码" />
+            </Form.Item>
+          </Form>
+        );
+
+      case "AlertGetAccount":
+        return (
+          <div className="p-4">
+            <h3 className="mb-2 font-medium">账号信息</h3>
+            <div className="p-3 rounded bg-gray-50">
+              <p>
+                <span className="text-gray-500">账号:</span> game_account_2024
+              </p>
+              <p>
+                <span className="text-gray-500">密码:</span> ********
+              </p>
+            </div>
+            <div className="mt-4 text-sm text-gray-500">
+              请妥善保管账号信息，切勿泄露给他人。
+            </div>
+          </div>
+        );
+
+      case "AlertVerification":
+        return (
+          <div className="p-4">
+            <p className="mb-4">请确认您已验证账号信息无误:</p>
+            <Form form={form} layout="vertical">
+              <Form.Item
+                name="verification_result"
+                label="验证结果"
+                rules={[{ required: true, message: "请选择验证结果" }]}
+              >
+                <Select>
+                  <Select.Option value="success">验证通过</Select.Option>
+                  <Select.Option value="failed">验证失败</Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="remarks" label="备注">
+                <Input.TextArea rows={3} placeholder="请输入备注信息" />
+              </Form.Item>
+            </Form>
+          </div>
+        );
+
+      case "AlertConfirmReceipt":
+        return (
+          <div className="p-4">
+            <p className="mb-4 text-center">您确认已收到商品并且一切正常吗？</p>
+            <p className="mb-2 text-sm text-gray-500">
+              确认收货后，交易将完成，货款将转给卖家。
+            </p>
+            <Form form={form} layout="vertical">
+              <Form.Item name="remarks" label="备注">
+                <Input.TextArea rows={3} placeholder="请输入备注信息（可选）" />
+              </Form.Item>
+            </Form>
+          </div>
+        );
+
+      case "AlertProductDetails":
+      case "AlertOrderDetails":
+        return (
+          <div className="p-4">
+            <div className="pb-2 mb-4 border-b">
+              <h3 className="font-medium">
+                {modalType === "AlertProductDetails" ? "商品详情" : "订单详情"}
+              </h3>
+              <p className="text-sm text-gray-500">ID: {paramId}</p>
+            </div>
+            <div className="flex items-center justify-center h-40">
+              <div className="text-gray-400">加载中...</div>
+            </div>
+          </div>
+        );
+
+      default:
+        return <div>未知弹窗类型</div>;
+    }
+  };
+
+  const getModalTitle = () => {
+    switch (modalType) {
+      case "AlertEnterInformation":
+        return "录入信息";
+      case "AlertPayment":
+        return "支付";
+      case "AlertSubmitAccount":
+        return "提交账号";
+      case "AlertGetAccount":
+        return "获取账号";
+      case "AlertVerification":
+        return "确认验号";
+      case "AlertConfirmReceipt":
+        return "确认收货";
+      case "AlertProductDetails":
+        return "商品详情";
+      case "AlertOrderDetails":
+        return "订单详情";
+      default:
+        return "提示";
+    }
+  };
+
+  const showFooter =
+    modalType !== "AlertGetAccount" &&
+    modalType !== "AlertProductDetails" &&
+    modalType !== "AlertOrderDetails";
+
+  return (
+    <Modal
+      title={getModalTitle()}
+      open={visible}
+      onCancel={onClose}
+      footer={
+        showFooter
+          ? [
+              <Button key="back" onClick={onClose}>
+                取消
+              </Button>,
+              <Button
+                key="submit"
+                type="primary"
+                loading={loading}
+                onClick={handleSubmit}
+              >
+                确认
+              </Button>,
+            ]
+          : [
+              <Button key="close" type="primary" onClick={onClose}>
+                关闭
+              </Button>,
+            ]
+      }
+      width={modalType.includes("Details") ? 600 : 400}
+    >
+      {renderModalContent()}
+    </Modal>
+  );
+};
+
 const CardMessageRender: FC<IMessageItemProps> = (props) => {
   const { message, isSender } = props;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState("");
+  const [modalParamId, setModalParamId] = useState<number | undefined>(undefined);
+
+  const handleCardAction = (
+    url: string | { platform: number; pageName: string; paramId: number },
+  ) => {
+    if (typeof url === "string") {
+      window.open(url, "_blank");
+    } else if (url && typeof url === "object" && url.pageName) {
+      setModalType(url.pageName);
+      setModalParamId(url.paramId);
+      setModalVisible(true);
+    }
+  };
 
   const cardData = useMemo<IntelligentCard | null>(() => {
     try {
@@ -268,14 +558,14 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
                 <Price price={data.price} />
               </div>
             </div>
-            <div className="mt-3 text-right">
-              {/* <CardButton
+            {/* <div className="mt-3 text-right">
+              <CardButton
                 text="查看详情"
                 url={data.url}
                 variant="secondary"
                 className="px-3 py-1.5 text-xs"
-              /> */}
-            </div>
+              />
+            </div> */}
           </CardContainer>
         );
       }
@@ -326,11 +616,14 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
               <h3 className="flex-1 mr-4 text-base font-semibold leading-relaxed text-slate-800">
                 {data.title}
               </h3>
-              {/* <CardButton
+
+              <p className="text-sm leading-relaxed text-slate-600">{data.content}</p>
+              <CardButton
                 text={data.button.text}
                 url={data.button.url}
                 variant="primary"
-              /> */}
+                onClick={handleCardAction}
+              />
             </div>
           </CardContainer>
         );
@@ -349,13 +642,14 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
             <p className="mb-4 text-sm leading-relaxed text-slate-600">
               {data.content}
             </p>
-            {/* <div className="flex justify-end">
+            <div className="flex justify-end">
               <CardButton
                 text={data.button.text}
                 url={data.button.url}
                 variant="primary"
+                onClick={handleCardAction}
               />
-            </div> */}
+            </div>
           </CardContainer>
         );
       }
@@ -381,7 +675,7 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
                 </li>
               ))}
             </ul>
-            {/* <div className="flex justify-end space-x-2">
+            <div className="flex justify-end space-x-2">
               {data.buttonList.map((btn, index) => (
                 <CardButton
                   key={index}
@@ -395,9 +689,10 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
                       : "secondary"
                   }
                   className="px-3 py-1.5 text-xs"
+                  onClick={handleCardAction}
                 />
               ))}
-            </div> */}
+            </div>
           </CardContainer>
         );
       }
@@ -472,14 +767,15 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
                 </div>
               ))}
             </div>
-            {/* <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-4">
               <CardButton
                 text={data.button.text}
                 url={data.button.url}
                 variant="primary"
                 className="w-full"
+                onClick={handleCardAction}
               />
-            </div> */}
+            </div>
           </CardContainer>
         );
       }
@@ -498,14 +794,23 @@ const CardMessageRender: FC<IMessageItemProps> = (props) => {
   };
 
   return (
-    <div
-      className={clsx(
-        styles["message-content"],
-        isSender && styles["message-content-sender"],
-      )}
-    >
-      {renderCard()}
-    </div>
+    <>
+      <div
+        className={clsx(
+          styles["message-content"],
+          isSender && styles["message-content-sender"],
+        )}
+      >
+        {renderCard()}
+      </div>
+
+      <AlertModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        modalType={modalType}
+        paramId={modalParamId}
+      />
+    </>
   );
 };
 

@@ -88,6 +88,8 @@ const TopSearchBar = () => {
               },
             },
           });
+          localStorage.removeItem("token");
+          localStorage.removeItem("userType");
           rtcRef.current?.openOverlay();
         });
       }
@@ -145,7 +147,7 @@ const TopSearchBar = () => {
 
   return (
     <div className="no-mobile app-drag flex h-10 min-h-[40px] items-center bg-[var(--top-search-bar)] dark:bg-[#141414]">
-      <div className="flex w-full items-center justify-center">
+      <div className="flex items-center justify-center w-full">
         <div className="app-no-drag flex h-[26px] w-1/3 items-center justify-center rounded-md bg-[rgba(255,255,255,0.2)]"></div>
         <Popover
           content={<ActionPopContent actionClick={actionClick} />}
@@ -157,7 +159,7 @@ const TopSearchBar = () => {
           onOpenChange={(vis) => setActionVisible(vis)}
         >
           <img
-            className="app-no-drag ml-8 cursor-pointer"
+            className="ml-8 cursor-pointer app-no-drag"
             width={20}
             src={show_more}
             alt=""

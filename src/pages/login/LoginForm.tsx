@@ -95,6 +95,7 @@ const LoginForm = ({ loginMethod, setFormType, updateLoginMethod }: LoginFormPro
                 webData.data.token
               ) {
                 localStorage.setItem("token", String(webData.data.token));
+                localStorage.setItem("userType", String(webData.data.userType));
                 // 两个接口都成功后导航到聊天页面
                 setIsSubmitting(false);
                 navigate("/chat");
@@ -212,9 +213,9 @@ const LoginForm = ({ loginMethod, setFormType, updateLoginMethod }: LoginFormPro
           </Form.Item>
         )}
 
-        <div className="mb-10 flex flex-row justify-between">
+        <div className="flex flex-row justify-between mb-10">
           <span
-            className="cursor-pointer text-sm text-gray-400"
+            className="text-sm text-gray-400 cursor-pointer"
             onClick={() => setFormType(1)}
           >
             {t("placeholder.forgetPassword")}
@@ -253,7 +254,7 @@ const LoginForm = ({ loginMethod, setFormType, updateLoginMethod }: LoginFormPro
             {t("placeholder.registerToast")}
           </span>
           <span
-            className="cursor-pointer text-sm text-blue-500"
+            className="text-sm text-blue-500 cursor-pointer"
             onClick={() => setFormType(2)}
           >
             {t("placeholder.toRegister")}
